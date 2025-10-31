@@ -1,32 +1,32 @@
-# 💳 PAP Finanças
+# PAP Finanças
 
 Sistema de gestão de cartões de crédito e transações pessoais desenvolvido em PHP/MySQL como Projeto de Aptidão Profissional.
 
-## 📋 Funcionalidades
+## Funcionalidades
 
-- ✅ Sistema completo de autenticação (Login/Registo/Logout)
-- 💳 Gestão de cartões de crédito
+- Sistema completo de autenticação (Login/Registo/Logout)
+- Gestão de cartões de crédito
   - Adicionar, editar, ativar/desativar e eliminar cartões
   - Acompanhamento de limites e saldos
   - Alertas automáticos quando perto do limite (>80%)
-- 🧾 Gestão de transações
+- Gestão de transações
   - Registar despesas com descrição e categoria
   - Associar transações a cartões específicos
   - Filtrar por mês, categoria e cartão
-- 📊 Dashboard intuitivo
+- Dashboard intuitivo
   - Resumo mensal de gastos
   - Visualização de cartões e limites
   - Últimas transações
   - Sistema de alertas
 
-## 🚀 Tecnologias
+## Tecnologias
 
 - **Backend:** PHP 8+ com PDO
 - **Base de Dados:** MySQL/MariaDB
 - **Frontend:** Bootstrap 5
 - **Servidor:** PHP Built-in Server (desenvolvimento)
 
-## 📦 Instalação
+## Instalação
 
 ### 1. Clonar o Repositório
 ```bash
@@ -67,7 +67,7 @@ php -S localhost:8000 -t site
 
 Acede a: http://localhost:8000
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Projeto-PAP2/
@@ -92,7 +92,7 @@ Projeto-PAP2/
 └── README.md
 ```
 
-## 🔒 Segurança
+## Segurança
 
 - Passwords com hash usando `password_hash()` (bcrypt)
 - Prepared statements (PDO) para prevenir SQL Injection
@@ -100,7 +100,7 @@ Projeto-PAP2/
 - Validação server-side de todos os inputs
 - Configurações sensíveis fora do controlo de versão
 
-## 🎨 Capturas de Ecrã
+## Capturas de Ecrã
 
 ### Homepage
 ![Homepage](imgs/home.png)
@@ -114,7 +114,7 @@ Projeto-PAP2/
 ### Transações
 ![Cartões](imgs/transactions.png)
 
-## 📝 Base de Dados
+## Base de Dados
 
 ### Tabelas
 
@@ -145,7 +145,7 @@ Projeto-PAP2/
 - `category` - Categoria
 - `created_at` - Data/hora da transação
 
-## 🛠️ Desenvolvimento
+## Desenvolvimento
 
 ### Requisitos
 - PHP 8.0 ou superior
@@ -161,7 +161,7 @@ composer install
 php -S localhost:8000 -t site
 ```
 
-## 🤝 Contribuir
+## Contribuir
 
 Contribuições são bem-vindas! Sente-te à vontade para:
 1. Fazer fork do projeto
@@ -170,16 +170,16 @@ Contribuições são bem-vindas! Sente-te à vontade para:
 4. Push para a branch (`git push origin feature/nova-funcionalidade`)
 5. Abrir um Pull Request
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT - vê o ficheiro [LICENSE](LICENSE) para mais detalhes.
 
-## 👤 Autor
+## Autor
 
 **Diogo Freire**
 - GitHub: [@diogofreire-dev](https://github.com/diogofreire-dev)
 
-## 📞 Suporte
+## Suporte
 
 Se encontrares algum problema ou tiveres sugestões, por favor abre uma [issue](https://github.com/diogofreire-dev/Projeto-PAP2/issues).
 
