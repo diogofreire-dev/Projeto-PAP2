@@ -103,13 +103,16 @@ Projeto-PAP2/
 ## 🎨 Capturas de Ecrã
 
 ### Homepage
-![Homepage](docs/screenshots/home.png)
+![Homepage](imgs/home.png)
 
 ### Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
+![Dashboard](imgs/dashboard.png)
 
 ### Gestão de Cartões
-![Cartões](docs/screenshots/cards.png)
+![Cartões](imgs/cards.png)
+
+### Transações
+![Cartões](imgs/transactions.png)
 
 ## 📝 Base de Dados
 
