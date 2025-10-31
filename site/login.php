@@ -12,8 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($emailOrUsername === '' || $password === '') {
         $errors[] = 'Preenche todos os campos.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, username, password_hash FROM users WHERE email = :e OR username = :e LIMIT 1');
-        $stmt->execute([':e' => $emailOrUsername]);
+        // Usar placeholders distintos para evitar "Invalid parameter number"
+        $stmt = $pdo->prepare('SELECT id, username, password_hash FROM users WHERE email = :e OR username = :u LIMIT 1');
+        $stmt->execute([':e' => $emailOrUsername, ':u' => $emailOrUsername]);
         $user = $stmt->fetch();
 
         if ($user && password_verify($password, $user['password_hash'])) {

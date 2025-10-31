@@ -1,5 +1,4 @@
 <?php
-// site/logout.php
 session_start();
 $_SESSION = [];
 if (ini_get("session.use_cookies")) {
