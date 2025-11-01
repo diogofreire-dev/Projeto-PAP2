@@ -251,7 +251,7 @@ if (!empty($_SESSION['user_id'])) {
 <nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand" href="index.php">
-      <img src="assets/logo.png" alt="Freecard">
+      <img src="assets/logo2.png" alt="Freecard">
       Freecard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -286,7 +286,7 @@ if (!empty($_SESSION['user_id'])) {
         </div>
       </div>
       <div class="col-lg-6 d-none d-lg-block text-center">
-        <img src="assets/logo.png" alt="Freecard" style="max-width: 400px; opacity: 0.15;">
+        <img src="assets/logo.png" alt="Freecard" style="max-width: 500px; filter: brightness(0) invert(1);">
       </div>
     </div>
   </div>
