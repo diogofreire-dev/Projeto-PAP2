@@ -51,144 +51,311 @@ $transactions = $stmt->fetchAll();
 
 // Total filtrado
 $total = array_sum(array_column($transactions, 'amount'));
+
+// Agrupar por dia
+$byDay = [];
+foreach ($transactions as $t) {
+    $day = date('Y-m-d', strtotime($t['created_at']));
+    if (!isset($byDay[$day])) {
+        $byDay[$day] = [];
+    }
+    $byDay[$day][] = $t;
+}
 ?>
 <!doctype html>
-<html lang="pt">
+<html lang="pt-PT">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Transações - PAP</title>
+  <title>Transações - Freecard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-green: #2ecc71;
+      --dark-green: #27ae60;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8f9fa;
+    }
+    .navbar { 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+      background: white;
+    }
+    .navbar-brand img { height: 35px; margin-right: 8px; }
+    .btn-primary { 
+      background: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .btn-primary:hover { 
+      background: var(--dark-green); 
+      border-color: var(--dark-green); 
+    }
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .filter-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .transaction-item {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #f0f0f0;
+      transition: all 0.2s;
+    }
+    .transaction-item:hover {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transform: translateX(4px);
+    }
+    .transaction-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+      color: white;
+    }
+    .transaction-amount {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e74c3c;
+    }
+    .day-separator {
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 24px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    .category-badge {
+      background: #f0f0f0;
+      color: #2c3e50;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .summary-card {
+      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+      color: white;
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+    }
+    .stat-item h3 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .stat-item p {
+      font-size: 13px;
+      opacity: 0.9;
+      margin: 0;
+    }
+  </style>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="index.php">💳 PAP Finanças</a>
-    <div class="collapse navbar-collapse">
+    <a class="navbar-brand fw-bold" href="index.php">
+      <img src="assets/logo.png" alt="Freecard">
+      Freecard
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link active" href="transactions.php">Transações</a></li>
-        <li class="nav-item"><a class="nav-link" href="cards.php">Cartões</a></li>
-        <li class="nav-item"><a class="nav-link" href="logout.php">Sair</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="cards.php"><i class="bi bi-wallet2"></i> Cartões</a></li>
+        <li class="nav-item"><a class="nav-link" href="transactions.php"><i class="bi bi-receipt"></i> Transações</a></li>
+        <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
       </ul>
     </div>
   </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>🧾 Histórico de Transações</h2>
-    <a href="create_transaction.php" class="btn btn-primary">➕ Nova Transação</a>
-  </div>
-
-  <!-- Filtros -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <form method="get" class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label small">Mês</label>
-          <input type="month" name="month" class="form-control form-control-sm" value="<?=htmlspecialchars($month)?>">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label small">Categoria</label>
-          <select name="category" class="form-select form-select-sm">
-            <option value="">Todas as categorias</option>
-            <?php foreach($categories as $cat): ?>
-              <option value="<?=htmlspecialchars($cat)?>" <?=$category === $cat ? 'selected' : ''?>>
-                <?=htmlspecialchars($cat)?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label small">Cartão</label>
-          <select name="card_id" class="form-select form-select-sm">
-            <option value="">Todos os cartões</option>
-            <?php foreach($cards as $c): ?>
-              <option value="<?=$c['id']?>" <?=$card_id == $c['id'] ? 'selected' : ''?>>
-                <?=htmlspecialchars($c['name'])?> (<?=$c['last4']?>)
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div class="col-md-3 d-flex align-items-end gap-2">
-          <button type="submit" class="btn btn-primary btn-sm flex-fill">🔍 Filtrar</button>
-          <a href="transactions.php" class="btn btn-outline-secondary btn-sm">✕</a>
-        </div>
-      </form>
+    <div>
+      <h2><i class="bi bi-receipt"></i> As Minhas Transações</h2>
+      <p class="text-muted mb-0">Histórico completo de despesas</p>
     </div>
+    <a href="create_transaction.php" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Nova Transação
+    </a>
   </div>
 
   <!-- Resumo -->
-  <div class="alert alert-info d-flex justify-content-between align-items-center">
-    <span><strong><?=count($transactions)?></strong> transações encontradas</span>
-    <span>Total: <strong class="text-danger">€<?=number_format($total, 2)?></strong></span>
+  <?php if (!empty($transactions)): ?>
+    <div class="summary-card mb-4">
+      <div class="row">
+        <div class="col-4">
+          <div class="stat-item">
+            <h3><?=count($transactions)?></h3>
+            <p>Transações</p>
+          </div>
+        </div>
+        <div class="col-4 border-start border-end" style="border-color: rgba(255,255,255,0.2) !important;">
+          <div class="stat-item">
+            <h3>€<?=number_format($total, 2)?></h3>
+            <p>Total Gasto</p>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="stat-item">
+            <h3>€<?=count($transactions) > 0 ? number_format($total / count($transactions), 2) : '0.00'?></h3>
+            <p>Média</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif; ?>
+
+  <!-- Filtros -->
+  <div class="filter-card mb-4">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-calendar"></i> Mês
+        </label>
+        <input type="month" name="month" class="form-control" value="<?=htmlspecialchars($month)?>">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-tag"></i> Categoria
+        </label>
+        <select name="category" class="form-select">
+          <option value="">Todas as categorias</option>
+          <?php foreach($categories as $cat): ?>
+            <option value="<?=htmlspecialchars($cat)?>" <?=$category === $cat ? 'selected' : ''?>>
+              <?=htmlspecialchars($cat)?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-semibold">
+          <i class="bi bi-credit-card"></i> Cartão
+        </label>
+        <select name="card_id" class="form-select">
+          <option value="">Todos os cartões</option>
+          <?php foreach($cards as $c): ?>
+            <option value="<?=$c['id']?>" <?=$card_id == $c['id'] ? 'selected' : ''?>>
+              <?=htmlspecialchars($c['name'])?> (<?=$c['last4']?>)
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-fill">
+            <i class="bi bi-search"></i> Filtrar
+          </button>
+          <a href="transactions.php" class="btn btn-outline-secondary">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        </div>
+      </div>
+    </form>
   </div>
 
   <!-- Lista de Transações -->
   <?php if (empty($transactions)): ?>
-    <div class="card shadow-sm">
+    <div class="card">
       <div class="card-body text-center py-5">
+        <div class="mb-4">
+          <i class="bi bi-receipt" style="font-size: 80px; color: #e0e0e0;"></i>
+        </div>
         <h4 class="text-muted mb-3">Nenhuma transação encontrada</h4>
-        <p class="text-muted">Altera os filtros ou cria a tua primeira transação</p>
-        <a href="create_transaction.php" class="btn btn-primary">➕ Criar Transação</a>
+        <p class="text-muted mb-4">Altera os filtros ou cria a tua primeira transação</p>
+        <a href="create_transaction.php" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Criar Transação
+        </a>
       </div>
     </div>
   <?php else: ?>
-    <div class="card shadow-sm">
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th width="140">Data/Hora</th>
-              <th>Descrição</th>
-              <th width="120">Categoria</th>
-              <th width="180">Cartão</th>
-              <th width="100" class="text-end">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach($transactions as $t): ?>
-              <tr>
-                <td>
-                  <small class="text-muted">
-                    <?=date('d/m/Y', strtotime($t['created_at']))?><br>
-                    <?=date('H:i', strtotime($t['created_at']))?>
-                  </small>
-                </td>
-                <td>
-                  <strong><?=htmlspecialchars($t['description'])?></strong>
-                </td>
-                <td>
-                  <?php if($t['category']): ?>
-                    <span class="badge bg-info"><?=htmlspecialchars($t['category'])?></span>
-                  <?php else: ?>
-                    <span class="text-muted">-</span>
-                  <?php endif; ?>
-                </td>
-                <td>
-                  <?php if($t['card_name']): ?>
-                    <small>
-                      <?=htmlspecialchars($t['card_name'])?><br>
-                      <span class="text-muted">•••• <?=htmlspecialchars($t['last4'])?></span>
+    <div class="card">
+      <div class="card-body p-4">
+        <?php foreach($byDay as $day => $dayTransactions): ?>
+          <div class="day-separator">
+            <?php
+              $dayObj = new DateTime($day);
+              $today = new DateTime();
+              $yesterday = (new DateTime())->modify('-1 day');
+              
+              if ($dayObj->format('Y-m-d') === $today->format('Y-m-d')) {
+                echo 'Hoje';
+              } elseif ($dayObj->format('Y-m-d') === $yesterday->format('Y-m-d')) {
+                echo 'Ontem';
+              } else {
+                echo strftime('%A, %d de %B', strtotime($day));
+              }
+              
+              $dayTotal = array_sum(array_column($dayTransactions, 'amount'));
+            ?>
+            <span class="float-end text-danger">-€<?=number_format($dayTotal, 2)?></span>
+          </div>
+
+          <?php foreach($dayTransactions as $t): ?>
+            <div class="transaction-item">
+              <div class="d-flex align-items-center">
+                <div class="transaction-icon me-3">
+                  <i class="bi bi-<?=
+                    match($t['category']) {
+                      'Compras' => 'cart',
+                      'Alimentação' => 'cup-straw',
+                      'Transporte' => 'bus-front',
+                      'Saúde' => 'heart-pulse',
+                      'Entretenimento' => 'controller',
+                      'Educação' => 'book',
+                      'Casa' => 'house-door',
+                      default => 'receipt'
+                    }
+                  ?>"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold"><?=htmlspecialchars($t['description'])?></div>
+                  <div class="d-flex gap-2 align-items-center mt-1">
+                    <?php if($t['category']): ?>
+                      <span class="category-badge"><?=htmlspecialchars($t['category'])?></span>
+                    <?php endif; ?>
+                    <?php if($t['card_name']): ?>
+                      <small class="text-muted">
+                        <i class="bi bi-credit-card"></i>
+                        <?=htmlspecialchars($t['card_name'])?> (<?=htmlspecialchars($t['last4'])?>)
+                      </small>
+                    <?php else: ?>
+                      <small class="text-muted">
+                        <i class="bi bi-cash"></i> Dinheiro
+                      </small>
+                    <?php endif; ?>
+                    <small class="text-muted">
+                      <i class="bi bi-clock"></i> <?=date('H:i', strtotime($t['created_at']))?>
                     </small>
-                  <?php else: ?>
-                    <small class="text-muted">Dinheiro</small>
-                  <?php endif; ?>
-                </td>
-                <td class="text-end">
-                  <strong class="text-danger">-€<?=number_format($t['amount'], 2)?></strong>
-                </td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-          <tfoot class="table-light">
-            <tr>
-              <td colspan="4" class="text-end"><strong>Total:</strong></td>
-              <td class="text-end"><strong class="text-danger">-€<?=number_format($total, 2)?></strong></td>
-            </tr>
-          </tfoot>
-        </table>
+                  </div>
+                </div>
+                <div class="transaction-amount">
+                  -€<?=number_format($t['amount'], 2)?>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php endforeach; ?>
       </div>
     </div>
   <?php endif; ?>

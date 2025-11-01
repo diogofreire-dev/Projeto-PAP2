@@ -1,7 +1,7 @@
 <?php
 // site/dashboard.php
 require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/db.php';  // ← Removido o "$pdo ="
 
 $uid = $_SESSION['user_id'] ?? null;
 if (!$uid) {
@@ -66,32 +66,66 @@ foreach ($cards as $card) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dashboard - PAP</title>
+  <title>Dashboard - Freecard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
-    .card { transition: transform 0.2s; }
+    :root {
+      --primary-green: #2ecc71;
+      --dark-green: #27ae60;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .card { 
+      transition: transform 0.2s; 
+      border: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
     .card:hover { transform: translateY(-5px); }
-    .stat-card { border-left: 4px solid #0d6efd; }
+    .stat-card { border-left: 4px solid var(--primary-green); }
+    .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .navbar-brand img { height: 35px; margin-right: 8px; }
+    .btn-primary { 
+      background: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .btn-primary:hover { 
+      background: var(--dark-green); 
+      border-color: var(--dark-green); 
+    }
+    .btn-outline-primary { 
+      color: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .btn-outline-primary:hover { 
+      background: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .text-primary { color: var(--primary-green) !important; }
   </style>
 </head>
 <body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
-    <a class="navbar-brand fw-bold" href="index.php">💳 PAP Finanças</a>
+    <a class="navbar-brand fw-bold" href="index.php">
+      <img src="assets/logo.png" alt="Freecard">
+      Freecard
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="transactions.php">Transações</a></li>
-        <li class="nav-item"><a class="nav-link" href="cards.php">Cartões</a></li>
+        <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="transactions.php"><i class="bi bi-receipt"></i> Transações</a></li>
+        <li class="nav-item"><a class="nav-link" href="cards.php"><i class="bi bi-wallet2"></i> Cartões</a></li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            👤 <?=htmlspecialchars($_SESSION['username'])?>
+            <i class="bi bi-person-circle"></i> <?=htmlspecialchars($_SESSION['username'])?>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="logout.php">Sair</a></li>
+            <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
           </ul>
         </li>
       </ul>
@@ -102,7 +136,7 @@ foreach ($cards as $card) {
 <div class="container mt-4">
   <?php if (!empty($alerts)): ?>
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <strong>⚠️ Alertas:</strong>
+      <strong><i class="bi bi-exclamation-triangle"></i> Alertas:</strong>
       <ul class="mb-0 mt-2">
         <?php foreach($alerts as $a): ?>
           <li><?=htmlspecialchars($a)?></li>
@@ -117,7 +151,7 @@ foreach ($cards as $card) {
     <div class="col-12 col-lg-4">
       <div class="card shadow-sm stat-card">
         <div class="card-body">
-          <h5 class="card-title mb-3">📊 Resumo Rápido</h5>
+          <h5 class="card-title mb-3"><i class="bi bi-graph-up"></i> Resumo Rápido</h5>
           <div class="mb-3">
             <small class="text-muted">Gasto este mês</small>
             <h3 class="mb-0 text-primary">€<?=number_format($totalMonth,2)?></h3>
@@ -132,8 +166,12 @@ foreach ($cards as $card) {
             <strong><?=count($cards)?></strong>
           </div>
           <div class="d-grid gap-2">
-            <a href="create_transaction.php" class="btn btn-primary">➕ Nova Transação</a>
-            <a href="add_card.php" class="btn btn-outline-primary">💳 Adicionar Cartão</a>
+            <a href="create_transaction.php" class="btn btn-primary">
+              <i class="bi bi-plus-circle"></i> Nova Transação
+            </a>
+            <a href="add_card.php" class="btn btn-outline-primary">
+              <i class="bi bi-credit-card-2-front"></i> Adicionar Cartão
+            </a>
           </div>
         </div>
       </div>
@@ -141,7 +179,7 @@ foreach ($cards as $card) {
       <!-- Os teus cartões -->
       <div class="card shadow-sm mt-3">
         <div class="card-body">
-          <h6 class="card-title mb-3">💳 Os Teus Cartões</h6>
+          <h6 class="card-title mb-3"><i class="bi bi-wallet2"></i> Os Teus Cartões</h6>
           <?php if (empty($cards)): ?>
             <div class="text-center py-3">
               <p class="text-muted mb-2">Ainda não tens cartões</p>
@@ -182,7 +220,7 @@ foreach ($cards as $card) {
     <div class="col-12 col-lg-8">
       <div class="card shadow-sm">
         <div class="card-header bg-white">
-          <h5 class="mb-0">🧾 Últimas Transações</h5>
+          <h5 class="mb-0"><i class="bi bi-receipt"></i> Últimas Transações</h5>
         </div>
         <div class="card-body">
           <?php if (empty($recent)): ?>
