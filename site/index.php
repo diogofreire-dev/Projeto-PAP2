@@ -375,7 +375,7 @@ if (!empty($_SESSION['user_id'])) {
     <div class="row">
       <div class="col-md-6 mb-4 mb-md-0">
         <h5 class="mb-3">
-          <img src="assets/logo.png" alt="Freecard" style="height: 30px; margin-right: 10px;">
+          <img src="assets/logo2.png" alt="Freecard" style="height: 30px; margin-right: 10px;">
           Freecard
         </h5>
         <p class="text-light">Gestão inteligente de cartões e transações. Simples, rápido e gratuito.</p>
