@@ -166,7 +166,7 @@ if (!empty($_SESSION['user_id'])) {
     }
     
     .stats-section {
-      background: linear-gradient(135deg, #667eea 0%, #2c3e50 100%);
+      background: #2c3e50;
       padding: 80px 0;
       color: white;
     }
