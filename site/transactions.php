@@ -4,6 +4,54 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
 
 $uid = $_SESSION['user_id'] ?? null;
+$message = '';
+$messageType = 'info';
+
+// Processar remoção de transação
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action']) && $_POST['action'] === 'delete') {
+    $transactionId = intval($_POST['transaction_id'] ?? 0);
+    
+    try {
+        $pdo->beginTransaction();
+        
+        // Buscar a transação para saber o valor e o cartão
+        $stmt = $pdo->prepare("SELECT amount, card_id FROM transactions WHERE id = :id AND user_id = :uid");
+        $stmt->execute([':id' => $transactionId, ':uid' => $uid]);
+        $transaction = $stmt->fetch();
+        
+        if ($transaction) {
+            // Se a transação estava associada a um cartão, devolver o valor ao saldo disponível
+            if ($transaction['card_id']) {
+                $stmt = $pdo->prepare("
+                    UPDATE cards 
+                    SET balance = balance - :amount 
+                    WHERE id = :card_id AND user_id = :uid
+                ");
+                $stmt->execute([
+                    ':amount' => $transaction['amount'],
+                    ':card_id' => $transaction['card_id'],
+                    ':uid' => $uid
+                ]);
+            }
+            
+            // Remover a transação
+            $stmt = $pdo->prepare("DELETE FROM transactions WHERE id = :id AND user_id = :uid");
+            $stmt->execute([':id' => $transactionId, ':uid' => $uid]);
+            
+            $pdo->commit();
+            $message = 'Transação removida com sucesso!';
+            $messageType = 'success';
+        } else {
+            $pdo->rollBack();
+            $message = 'Transação não encontrada.';
+            $messageType = 'danger';
+        }
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        $message = 'Erro ao remover transação.';
+        $messageType = 'danger';
+    }
+}
 
 // Filtros
 $category = $_GET['category'] ?? '';
@@ -113,7 +161,6 @@ foreach ($transactions as $t) {
     }
     .transaction-item:hover {
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      transform: translateX(4px);
     }
     .transaction-icon {
       width: 48px;
@@ -125,6 +172,7 @@ foreach ($transactions as $t) {
       font-size: 20px;
       background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
       color: white;
+      flex-shrink: 0;
     }
     .transaction-amount {
       font-size: 18px;
@@ -166,6 +214,10 @@ foreach ($transactions as $t) {
       opacity: 0.9;
       margin: 0;
     }
+    .btn-delete {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -206,6 +258,14 @@ foreach ($transactions as $t) {
       <i class="bi bi-plus-circle"></i> Nova Transação
     </a>
   </div>
+
+  <?php if ($message): ?>
+    <div class="alert alert-<?=$messageType?> alert-dismissible fade show">
+      <i class="bi bi-<?=$messageType === 'success' ? 'check-circle' : 'exclamation-circle'?>"></i>
+      <?=htmlspecialchars($message)?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <?php endif; ?>
 
   <!-- Resumo -->
   <?php if (!empty($transactions)): ?>
@@ -320,8 +380,8 @@ foreach ($transactions as $t) {
 
           <?php foreach($dayTransactions as $t): ?>
             <div class="transaction-item">
-              <div class="d-flex align-items-center">
-                <div class="transaction-icon me-3">
+              <div class="d-flex align-items-center gap-3">
+                <div class="transaction-icon">
                   <i class="bi bi-<?=
                     match($t['category']) {
                       'Compras' => 'cart',
@@ -337,7 +397,7 @@ foreach ($transactions as $t) {
                 </div>
                 <div class="flex-grow-1">
                   <div class="fw-semibold"><?=htmlspecialchars($t['description'])?></div>
-                  <div class="d-flex gap-2 align-items-center mt-1">
+                  <div class="d-flex gap-2 align-items-center mt-1 flex-wrap">
                     <?php if($t['category']): ?>
                       <span class="category-badge"><?=htmlspecialchars($t['category'])?></span>
                     <?php endif; ?>
@@ -356,8 +416,17 @@ foreach ($transactions as $t) {
                     </small>
                   </div>
                 </div>
-                <div class="transaction-amount">
-                  -€<?=number_format($t['amount'], 2)?>
+                <div class="text-end d-flex flex-column align-items-end gap-2">
+                  <div class="transaction-amount">
+                    -€<?=number_format($t['amount'], 2)?>
+                  </div>
+                  <form method="post" style="margin: 0;" onsubmit="return confirm('Tens a certeza que queres remover esta transação? Esta ação não pode ser revertida.');">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="transaction_id" value="<?=$t['id']?>">
+                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+                      <i class="bi bi-trash"></i> Cancelar
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
