@@ -58,7 +58,7 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gerir Cartões - Freecard</title>
+  <title>Gerir Cartões - FreeCard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
@@ -242,7 +242,7 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
                 <div>
                   <div class="card-name"><?=htmlspecialchars($c['name'])?></div>
                   <div class="d-flex justify-content-between align-items-center mt-2">
-                    <small>Freecard</small>
+                    <small>FreeCard</small>
                     <span class="badge bg-<?=$c['active'] ? 'light' : 'secondary'?> text-dark">
                       <?=$c['active'] ? 'ATIVO' : 'INATIVO'?>
                     </span>

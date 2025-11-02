@@ -12,7 +12,7 @@ if (!empty($_SESSION['user_id'])) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Freecard - Gestão de Cartões e Transações</title>
+  <title>FreeCard - Gestão de Cartões e Transações</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
@@ -252,7 +252,7 @@ if (!empty($_SESSION['user_id'])) {
   <div class="container">
     <a class="navbar-brand" href="index.php">
       <img src="assets/logo2.png" alt="Freecard">
-      Freecard
+      FreeCard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -376,7 +376,7 @@ if (!empty($_SESSION['user_id'])) {
       <div class="col-md-6 mb-4 mb-md-0">
         <h5 class="mb-3">
           <img src="assets/logo2.png" alt="Freecard" style="height: 30px; margin-right: 10px;">
-          Freecard
+          FreeCard
         </h5>
         <p class="text-light">Gestão de cartões e transações. Simples, rápido e gratuito.</p>
       </div>
@@ -394,7 +394,7 @@ if (!empty($_SESSION['user_id'])) {
     </div>
     <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
     <div class="text-center">
-      <p class="mb-0 text-light">&copy; <?=date('Y')?> Freecard. Todos os direitos reservados.</p>
+      <p class="mb-0 text-light">&copy; <?=date('Y')?> FreeCard. Todos os direitos reservados.</p>
     </div>
   </div>
 </footer>
