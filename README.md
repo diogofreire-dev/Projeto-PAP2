@@ -1,5 +1,4 @@
-# PAP Finanças
-
+# FreeCard
 Sistema de gestão de cartões de crédito e transações pessoais desenvolvido em PHP/MySQL como Projeto de Aptidão Profissional.
 
 ## Funcionalidades

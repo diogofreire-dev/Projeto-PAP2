@@ -389,7 +389,7 @@ if (!empty($_SESSION['user_id'])) {
       </div>
       <div class="col-md-3">
         <h6 class="mb-3">Projeto</h6>
-        <p class="text-light small">Projeto de Aptidão Profissional<br>Desenvolvido por Diogo Freire</p>
+        <p class="text-light small">Projeto de Aptidão Profissional<br>Desenvolvido por Diogo Freire e Jandro Antunes</p>
       </div>
     </div>
     <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
