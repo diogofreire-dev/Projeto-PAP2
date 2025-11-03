@@ -1,7 +1,7 @@
 <?php
 // site/dashboard.php
 require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/../config/db.php';  // ← Removido o "$pdo ="
+require_once __DIR__ . '/../config/db.php';
 
 $uid = $_SESSION['user_id'] ?? null;
 if (!$uid) {
@@ -19,6 +19,23 @@ $stmt = $pdo->prepare("
 $stmt->execute([':uid' => $uid]);
 $totalMonth = $stmt->fetchColumn();
 
+// Total mês anterior
+$stmt = $pdo->prepare("
+    SELECT COALESCE(SUM(amount),0) AS total_last_month 
+    FROM transactions 
+    WHERE user_id = :uid 
+    AND created_at >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+    AND created_at < DATE_FORMAT(CURDATE(), '%Y-%m-01')
+");
+$stmt->execute([':uid' => $uid]);
+$totalLastMonth = $stmt->fetchColumn();
+
+// Calcular tendência
+$tendency = 0;
+if ($totalLastMonth > 0) {
+    $tendency = (($totalMonth - $totalLastMonth) / $totalLastMonth) * 100;
+}
+
 // Transacções últimos 30 dias
 $stmt = $pdo->prepare("
     SELECT COUNT(*) 
@@ -28,6 +45,48 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([':uid' => $uid]);
 $count30 = $stmt->fetchColumn();
+
+// Gastos por categoria (mês atual)
+$stmt = $pdo->prepare("
+    SELECT 
+        COALESCE(category, 'Sem Categoria') as category,
+        SUM(amount) as total,
+        COUNT(*) as count
+    FROM transactions 
+    WHERE user_id = :uid 
+    AND created_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    GROUP BY category
+    ORDER BY total DESC
+");
+$stmt->execute([':uid' => $uid]);
+$categoryData = $stmt->fetchAll();
+
+// Maior despesa do mês
+$stmt = $pdo->prepare("
+    SELECT description, amount, category
+    FROM transactions 
+    WHERE user_id = :uid 
+    AND created_at >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+    ORDER BY amount DESC
+    LIMIT 1
+");
+$stmt->execute([':uid' => $uid]);
+$biggestExpense = $stmt->fetch();
+
+// Atividade dos últimos 7 dias
+$stmt = $pdo->prepare("
+    SELECT 
+        DATE(created_at) as day,
+        SUM(amount) as total,
+        COUNT(*) as count
+    FROM transactions 
+    WHERE user_id = :uid 
+    AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    GROUP BY DATE(created_at)
+    ORDER BY day ASC
+");
+$stmt->execute([':uid' => $uid]);
+$last7Days = $stmt->fetchAll();
 
 // Últimos registos
 $stmt = $pdo->prepare("
@@ -60,6 +119,19 @@ foreach ($cards as $card) {
         }
     }
 }
+
+// Cores para categorias
+$categoryColors = [
+    'Compras' => '#3498db',
+    'Alimentação' => '#e74c3c',
+    'Transporte' => '#f39c12',
+    'Saúde' => '#1abc9c',
+    'Entretenimento' => '#9b59b6',
+    'Educação' => '#34495e',
+    'Casa' => '#e67e22',
+    'Outros' => '#95a5a6',
+    'Sem Categoria' => '#bdc3c7'
+];
 ?>
 <!doctype html>
 <html lang="pt">
@@ -103,13 +175,119 @@ foreach ($cards as $card) {
       border-color: var(--primary-green); 
     }
     .text-primary { color: var(--primary-green) !important; }
+    
+    /* Gráfico de barras custom */
+    .category-bar-container {
+      margin-bottom: 20px;
+    }
+    .category-bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .category-bar-wrapper {
+      background: #f0f0f0;
+      border-radius: 10px;
+      height: 32px;
+      overflow: hidden;
+      position: relative;
+    }
+    .category-bar {
+      height: 100%;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      transition: width 1s ease-out;
+      background: linear-gradient(90deg, var(--bar-color), var(--bar-color-light));
+    }
+    
+    /* Stats cards */
+    .stat-mini-card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 3px solid;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    /* Timeline */
+    .activity-timeline {
+      display: flex;
+      gap: 4px;
+      justify-content: space-between;
+    }
+    .activity-day {
+      flex: 1;
+      height: 80px;
+      background: #e9ecef;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .activity-day:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .activity-day-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, var(--primary-green), var(--dark-green));
+      transition: height 0.8s ease-out;
+    }
+    .activity-day-label {
+      position: absolute;
+      bottom: 4px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 10px;
+      color: white;
+      font-weight: 600;
+    }
+    .activity-day-amount {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    
+    .tendency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .tendency-up {
+      background: #fee;
+      color: #c00;
+    }
+    .tendency-down {
+      background: #efe;
+      color: #0a0;
+    }
   </style>
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.php">
-      <img src="assets/logo2.png" alt="Freecard">
+      <img src="assets/logo.png" alt="Freecard">
       Freecard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -153,7 +331,15 @@ foreach ($cards as $card) {
         <div class="card-body">
           <h5 class="card-title mb-3"><i class="bi bi-graph-up"></i> Resumo Rápido</h5>
           <div class="mb-3">
-            <small class="text-muted">Gasto este mês</small>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">Gasto este mês</small>
+              <?php if ($tendency != 0): ?>
+                <span class="tendency-badge <?=$tendency > 0 ? 'tendency-up' : 'tendency-down'?>">
+                  <i class="bi bi-arrow-<?=$tendency > 0 ? 'up' : 'down'?>"></i>
+                  <?=abs(round($tendency))?>%
+                </span>
+              <?php endif; ?>
+            </div>
             <h3 class="mb-0 text-primary">€<?=number_format($totalMonth,2)?></h3>
           </div>
           <hr>
@@ -216,8 +402,99 @@ foreach ($cards as $card) {
       </div>
     </div>
 
-    <!-- Coluna direita: Transações -->
+    <!-- Coluna direita: Análise e Transações -->
     <div class="col-12 col-lg-8">
+      
+      <!-- Estatísticas Mini -->
+      <?php if (!empty($categoryData) || $biggestExpense): ?>
+      <div class="row g-3 mb-4">
+        <?php if ($biggestExpense): ?>
+        <div class="col-md-6">
+          <div class="stat-mini-card" style="border-left-color: #e74c3c;">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <small class="text-muted">Maior Despesa</small>
+                <h4 class="mb-0 text-danger">€<?=number_format($biggestExpense['amount'],2)?></h4>
+                <small class="text-muted"><?=htmlspecialchars($biggestExpense['description'])?></small>
+              </div>
+              <i class="bi bi-exclamation-circle text-danger" style="font-size: 24px;"></i>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (!empty($categoryData)): ?>
+        <div class="col-md-6">
+          <div class="stat-mini-card" style="border-left-color: var(--primary-green);">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <small class="text-muted">Categoria Top</small>
+                <h4 class="mb-0 text-primary"><?=htmlspecialchars($categoryData[0]['category'])?></h4>
+                <small class="text-muted">€<?=number_format($categoryData[0]['total'],2)?> em <?=$categoryData[0]['count']?> transações</small>
+              </div>
+              <i class="bi bi-star-fill text-warning" style="font-size: 24px;"></i>
+            </div>
+          </div>
+        </div>
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
+
+      <!-- Gráfico de Gastos por Categoria -->
+      <?php if (!empty($categoryData)): ?>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-4"><i class="bi bi-bar-chart"></i> Gastos por Categoria</h5>
+          <?php 
+          $maxAmount = max(array_column($categoryData, 'total'));
+          foreach ($categoryData as $cat): 
+            $percentage = ($cat['total'] / $maxAmount) * 100;
+            $color = $categoryColors[$cat['category']] ?? '#95a5a6';
+          ?>
+          <div class="category-bar-container">
+            <div class="category-bar-label">
+              <span><strong><?=htmlspecialchars($cat['category'])?></strong> <small class="text-muted">(<?=$cat['count']?> transações)</small></span>
+              <span class="text-danger fw-bold">€<?=number_format($cat['total'],2)?></span>
+            </div>
+            <div class="category-bar-wrapper">
+              <div class="category-bar" 
+                   style="--bar-color: <?=$color?>; --bar-color-light: <?=$color?>aa; width: 0%;"
+                   data-width="<?=$percentage?>%">
+                <?=round(($cat['total'] / $totalMonth) * 100)?>%
+              </div>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <?php endif; ?>
+
+      <!-- Atividade dos Últimos 7 Dias -->
+      <?php if (!empty($last7Days)): ?>
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3"><i class="bi bi-calendar-week"></i> Atividade dos Últimos 7 Dias</h5>
+          <div class="activity-timeline">
+            <?php 
+            $maxDay = max(array_column($last7Days, 'total'));
+            foreach ($last7Days as $day): 
+              $heightPercent = $maxDay > 0 ? ($day['total'] / $maxDay) * 100 : 0;
+              $dayName = strftime('%a', strtotime($day['day']));
+            ?>
+            <div class="activity-day" title="€<?=number_format($day['total'],2)?> em <?=$day['count']?> transações">
+              <div class="activity-day-fill" style="height: 0%" data-height="<?=$heightPercent?>%"></div>
+              <?php if ($day['total'] > 0): ?>
+              <div class="activity-day-amount">€<?=number_format($day['total'],0)?></div>
+              <?php endif; ?>
+              <div class="activity-day-label"><?=$dayName?></div>
+            </div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      </div>
+      <?php endif; ?>
+
+      <!-- Últimas Transações -->
       <div class="card shadow-sm">
         <div class="card-header bg-white">
           <h5 class="mb-0"><i class="bi bi-receipt"></i> Últimas Transações</h5>
@@ -268,7 +545,7 @@ foreach ($cards as $card) {
               </table>
             </div>
             <div class="text-center mt-3">
-              <a href="transactions.php" class="btn btn-outline-primary">Ver todas as transações →</a>
+              <a href="transactions.php" class="btn btn-outline-primary">Ver todas as transações</a>
             </div>
           <?php endif; ?>
         </div>
@@ -278,5 +555,22 @@ foreach ($cards as $card) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Animar barras de categoria
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(() => {
+    document.querySelectorAll('.category-bar').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }, 100);
+  
+  // Animar timeline de atividade
+  setTimeout(() => {
+    document.querySelectorAll('.activity-day-fill').forEach(fill => {
+      fill.style.height = fill.dataset.height;
+    });
+  }, 300);
+});
+</script>
 </body>
 </html>
