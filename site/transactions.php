@@ -420,13 +420,18 @@ foreach ($transactions as $t) {
                   <div class="transaction-amount">
                     -€<?=number_format($t['amount'], 2)?>
                   </div>
-                  <form method="post" style="margin: 0;" onsubmit="return confirm('Tens a certeza que queres remover esta transação? Esta ação não pode ser revertida.');">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="transaction_id" value="<?=$t['id']?>">
-                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
-                      <i class="bi bi-trash"></i> Cancelar
-                    </button>
-                  </form>
+                  <div class="d-flex gap-2">
+                    <a href="edit_transaction.php?id=<?=$t['id']?>" class="btn btn-sm btn-outline-primary btn-delete">
+                      <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <form method="post" style="margin: 0;" onsubmit="return confirm('Tens a certeza que queres remover esta transação? Esta ação não pode ser revertida.');">
+                      <input type="hidden" name="action" value="delete">
+                      <input type="hidden" name="transaction_id" value="<?=$t['id']?>">
+                      <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+                        <i class="bi bi-trash"></i> Remover
+                      </button>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
