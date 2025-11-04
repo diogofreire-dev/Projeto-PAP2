@@ -155,7 +155,7 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.php">
       <img src="assets/logo2.png" alt="Freecard">
-      Freecard
+      FreeCard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
