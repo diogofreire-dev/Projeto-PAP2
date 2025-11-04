@@ -469,31 +469,6 @@ $categoryColors = [
       </div>
       <?php endif; ?>
 
-      <!-- Atividade dos Últimos 7 Dias -->
-      <?php if (!empty($last7Days)): ?>
-      <div class="card shadow-sm mb-4">
-        <div class="card-body">
-          <h5 class="card-title mb-3"><i class="bi bi-calendar-week"></i> Atividade dos Últimos 7 Dias</h5>
-          <div class="activity-timeline">
-            <?php 
-            $maxDay = max(array_column($last7Days, 'total'));
-            foreach ($last7Days as $day): 
-              $heightPercent = $maxDay > 0 ? ($day['total'] / $maxDay) * 100 : 0;
-              $dayName = strftime('%a', strtotime($day['day']));
-            ?>
-            <div class="activity-day" title="€<?=number_format($day['total'],2)?> em <?=$day['count']?> transações">
-              <div class="activity-day-fill" style="height: 0%" data-height="<?=$heightPercent?>%"></div>
-              <?php if ($day['total'] > 0): ?>
-              <div class="activity-day-amount">€<?=number_format($day['total'],0)?></div>
-              <?php endif; ?>
-              <div class="activity-day-label"><?=$dayName?></div>
-            </div>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      </div>
-      <?php endif; ?>
-
       <!-- Últimas Transações -->
       <div class="card shadow-sm">
         <div class="card-header bg-white">
