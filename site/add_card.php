@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Adicionar Cartão - FreeCard</title>
+  <title>Adicionar Cartão - Freecard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <style>
@@ -155,8 +155,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.php">
-      <img src="assets/logo2.png" alt="Freecard">
-      FreeCard
+      <img src="assets/logo.png" alt="Freecard">
+      Freecard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -285,10 +285,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       value="<?=htmlspecialchars($limit ?? 0)?>" 
                       required
                     >
+                    <small class="text-muted">O quanto é que poderás gastar expecificamente neste cartão</small>
                   </div>
 
                   <div class="col-md-6 mb-3">
-                    <label class="form-label">Saldo Atual (€)</label>
+                    <label class="form-label">Gasto Inicial (€)</label>
                     <input 
                       type="number" 
                       name="balance" 
@@ -299,6 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       min="0"
                       value="<?=htmlspecialchars($balance ?? 0)?>"
                     >
+                    <small class="text-muted">Se já tens gastos acumulados no cartão</small>
                   </div>
                 </div>
 
