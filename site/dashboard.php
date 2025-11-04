@@ -287,8 +287,8 @@ $categoryColors = [
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.php">
-      <img src="assets/logo2.png" alt="Freecard">
-      FreeCard
+      <img src="assets/logo.png" alt="Freecard">
+      Freecard
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -372,7 +372,10 @@ $categoryColors = [
               <a href="add_card.php" class="btn btn-sm btn-primary">Adicionar primeiro cartão</a>
             </div>
           <?php else: ?>
-            <?php foreach($cards as $c): ?>
+            <?php 
+            $displayCards = array_slice($cards, 0, 2); // Mostrar apenas 2 cartões
+            $remainingCount = count($cards) - 2;
+            foreach($displayCards as $c): ?>
               <?php 
                 $percentage = $c['limit_amount'] > 0 ? ($c['balance'] / $c['limit_amount']) * 100 : 0;
                 $progressColor = $percentage >= 80 ? 'danger' : ($percentage >= 60 ? 'warning' : 'success');
@@ -396,6 +399,14 @@ $categoryColors = [
                 </div>
               </div>
             <?php endforeach; ?>
+            
+            <?php if ($remainingCount > 0): ?>
+              <div class="text-center mb-3 p-3 border rounded bg-light">
+                <i class="bi bi-plus-circle text-muted"></i>
+                <small class="text-muted d-block">+<?=$remainingCount?> cart<?=$remainingCount > 1 ? 'ões' : 'ão'?></small>
+              </div>
+            <?php endif; ?>
+            
             <a href="cards.php" class="btn btn-sm btn-outline-secondary w-100">Gerir todos os cartões</a>
           <?php endif; ?>
         </div>
