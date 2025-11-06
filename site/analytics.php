@@ -28,8 +28,9 @@ $cards = $stmt->fetchAll();
 $monthlyData = [];
 $categories = ['Compras', 'Alimentação', 'Transporte', 'Saúde', 'Entretenimento', 'Educação', 'Casa', 'Outros'];
 
+// Inicializar array para cada categoria com 12 meses (índice 0-11)
 foreach ($categories as $cat) {
-    $monthlyData[$cat] = array_fill(1, 12, 0);
+    $monthlyData[$cat] = array_fill(0, 12, 0);
 }
 
 $sql = "
@@ -55,13 +56,14 @@ $stmt->execute($params);
 $results = $stmt->fetchAll();
 
 foreach ($results as $row) {
-    $month = intval($row['month']);
+    $month = intval($row['month']) - 1; // Converter para índice 0-11
     $category = $row['category'];
     $total = floatval($row['total']);
     
     if (isset($monthlyData[$category])) {
         $monthlyData[$category][$month] = $total;
     } else {
+        // Se a categoria não existe na lista, adicionar aos "Outros"
         $monthlyData['Outros'][$month] += $total;
     }
 }
@@ -157,58 +159,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       padding: 20px;
       background: white;
       border-radius: 16px;
-    }
-    
-    .line-chart {
-      position: relative;
-      height: 100%;
-      border-left: 2px solid #ddd;
-      border-bottom: 2px solid #ddd;
-    }
-    
-    .chart-grid {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    
-    .grid-line {
-      width: 100%;
-      height: 1px;
-      background: #f0f0f0;
-      position: relative;
-    }
-    
-    .grid-label {
-      position: absolute;
-      left: -40px;
-      top: -8px;
-      font-size: 12px;
-      color: #999;
-    }
-    
-    .chart-canvas {
-      position: absolute;
-      width: calc(100% - 40px);
-      height: calc(100% - 40px);
-      left: 40px;
-      top: 20px;
-    }
-    
-    .month-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      padding-left: 40px;
-    }
-    
-    .month-label {
-      font-size: 12px;
-      color: #666;
-      font-weight: 600;
     }
     
     .legend {
@@ -425,12 +375,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       
       <div class="chart-container">
         <canvas id="lineChart" width="800" height="400"></canvas>
-        
-        <div class="month-labels">
-          <?php foreach($months as $m): ?>
-            <div class="month-label"><?=$m?></div>
-          <?php endforeach; ?>
-        </div>
       </div>
       
       <div class="legend" id="legend">
@@ -530,6 +474,10 @@ const chart = new Chart(ctx, {
         },
         bodyFont: {
           size: 13
+        },
+        filter: function(tooltipItem) {
+          // Apenas mostrar categorias com valores > 0
+          return tooltipItem.parsed.y > 0;
         },
         callbacks: {
           label: function(context) {

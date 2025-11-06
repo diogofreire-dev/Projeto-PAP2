@@ -459,7 +459,10 @@ $categoryColors = [
           <h5 class="card-title mb-4"><i class="bi bi-bar-chart"></i> Gastos por Categoria</h5>
           <?php 
           $maxAmount = max(array_column($categoryData, 'total'));
-          foreach ($categoryData as $cat): 
+          $displayCategories = array_slice($categoryData, 0, 2); // Mostrar apenas 3 categorias
+          $remainingCategories = count($categoryData) - 2;
+          
+          foreach ($displayCategories as $cat): 
             $percentage = ($cat['total'] / $maxAmount) * 100;
             $color = $categoryColors[$cat['category']] ?? '#95a5a6';
           ?>
@@ -477,6 +480,17 @@ $categoryColors = [
             </div>
           </div>
           <?php endforeach; ?>
+          
+          <?php if ($remainingCategories > 0): ?>
+            <div class="text-center mt-3 p-3 border rounded bg-light">
+              <i class="bi bi-plus-circle text-muted"></i>
+              <small class="text-muted d-block mb-2">+<?=$remainingCategories?> categoria<?=$remainingCategories > 1 ? 's' : ''?></small>
+            </div>
+          <?php endif; ?>
+          
+          <div class="text-center mt-3">
+            <a href="analytics.php" class="btn btn-sm btn-outline-primary">Ver análise completa</a>
+          </div>
         </div>
       </div>
       <?php endif; ?>
@@ -505,7 +519,11 @@ $categoryColors = [
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach($recent as $r): ?>
+                  <?php 
+                  $displayTransactions = array_slice($recent, 0, 3); // Mostrar apenas 5 transações
+                  $remainingTransactions = count($recent) - 3;
+                  
+                  foreach($displayTransactions as $r): ?>
                     <tr>
                       <td><?=date('d/m/Y H:i', strtotime($r['created_at']))?></td>
                       <td><?=htmlspecialchars($r['description'] ?: '-')?></td>
@@ -531,6 +549,14 @@ $categoryColors = [
                 </tbody>
               </table>
             </div>
+            
+            <?php if ($remainingTransactions > 0): ?>
+              <div class="text-center mb-3 p-3 border-top bg-light">
+                <i class="bi bi-plus-circle text-muted"></i>
+                <small class="text-muted d-block">+<?=$remainingTransactions?> transaç<?=$remainingTransactions > 1 ? 'ões' : 'ão'?> mais</small>
+              </div>
+            <?php endif; ?>
+            
             <div class="text-center mt-3">
               <a href="transactions.php" class="btn btn-outline-primary">Ver todas as transações</a>
             </div>
