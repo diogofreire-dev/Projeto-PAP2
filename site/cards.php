@@ -94,7 +94,7 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
     }
     .card-visual {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #13d168ff 0%, #005218ff 100%);
       border-radius: 12px;
       padding: 20px;
       color: white;
