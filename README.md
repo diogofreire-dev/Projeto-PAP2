@@ -29,8 +29,8 @@ Sistema de gestão de cartões de crédito e transações pessoais desenvolvido 
 
 ### 1. Clonar o Repositório
 ```bash
-git clone https://github.com/diogofreire-dev/Projeto-PAP2.git
-cd Projeto-PAP2
+git clone https://github.com/diogofreire-dev/FreeCard.git
+cd FreeCard
 ```
 
 ### 2. Configurar Base de Dados
@@ -69,7 +69,7 @@ Acede a: http://localhost:8000
 ## Estrutura do Projeto
 
 ```
-Projeto-PAP2/
+FreeCard/
 ├── config/
 │   ├── db.php              # Ligação à BD (não incluído no Git)
 │   └── db.example.php      # Template de configuração
@@ -180,8 +180,8 @@ Este projeto está sob a licença MIT - vê o ficheiro [LICENSE](LICENSE) para m
 
 ## Suporte
 
-Se encontrares algum problema ou tiveres sugestões, por favor abre uma [issue](https://github.com/diogofreire-dev/Projeto-PAP2/issues).
+Se encontrares algum problema ou tiveres sugestões, por favor abre uma [issue](https://github.com/diogofreire-dev/FreeCard/issues).
 
 ---
 
-Desenvolvido com ❤️ como Projeto de Aptidão Profissional
+Desenvolvido como Projeto de Aptidão Profissional
