@@ -374,8 +374,8 @@ $categoryColors = [
             </div>
           <?php else: ?>
             <?php 
-            $displayCards = array_slice($cards, 0, 2); // Mostrar apenas 2 cartões
-            $remainingCount = count($cards) - 2;
+            $displayCards = array_slice($cards, 0, 3); // Mostrar apenas 3 cartões
+            $remainingCount = count($cards) - 3;
             foreach($displayCards as $c): ?>
               <?php 
                 $percentage = $c['limit_amount'] > 0 ? ($c['balance'] / $c['limit_amount']) * 100 : 0;
