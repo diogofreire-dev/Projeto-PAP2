@@ -293,7 +293,10 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
               </div>
 
               <!-- Ações -->
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 mb-2">
+                <a href="edit_card.php?id=<?=$c['id']?>" class="btn btn-sm btn-outline-primary flex-fill">
+                  <i class="bi bi-pencil"></i> Editar
+                </a>
                 <form method="post" class="flex-fill">
                   <input type="hidden" name="card_id" value="<?=$c['id']?>">
                   <input type="hidden" name="action" value="toggle">
@@ -302,11 +305,13 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
                     <?=$c['active'] ? 'Desativar' : 'Ativar'?>
                   </button>
                 </form>
+              </div>
+              <div class="d-grid">
                 <form method="post" onsubmit="return confirm('Tens a certeza que queres eliminar este cartão? Esta ação não pode ser revertida.');">
                   <input type="hidden" name="card_id" value="<?=$c['id']?>">
                   <input type="hidden" name="action" value="delete">
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
+                  <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                    <i class="bi bi-trash"></i> Eliminar
                   </button>
                 </form>
               </div>
