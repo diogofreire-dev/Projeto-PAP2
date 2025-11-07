@@ -141,23 +141,29 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       font-weight: 700;
       position: relative;
     }
-    .stat-box {
+    .summary-card {
       background: white;
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .stat-item {
       text-align: center;
-      border: 2px solid #f0f0f0;
+      padding: 16px;
     }
-    .stat-box h3 {
-      color: var(--primary-green);
-      font-size: 32px;
+    .stat-item h3 {
+      font-size: 28px;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      color: #2c3e50;
     }
-    .stat-box p {
-      color: #7f8c8d;
+    .stat-item p {
+      font-size: 13px;
       margin: 0;
-      font-size: 14px;
+      color: #7f8c8d;
+    }
+    .stat-item:not(:last-child) {
+      border-right: 1px solid #e9ecef;
     }
   </style>
 </head>
@@ -211,23 +217,25 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
 
   <?php if (!empty($cards)): ?>
     <!-- Estatísticas -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="stat-box">
-          <h3><?=count($cards)?></h3>
-          <p>Total de Cartões</p>
+    <div class="summary-card mb-4">
+      <div class="row">
+        <div class="col-4">
+          <div class="stat-item">
+            <h3><?=count($cards)?></h3>
+            <p>Total de Cartões</p>
+          </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-box">
-          <h3>€<?=number_format($totalLimit, 2)?></h3>
-          <p>Limite Total</p>
+        <div class="col-4">
+          <div class="stat-item">
+            <h3 style="color: #3498db;">€<?=number_format($totalLimit, 2)?></h3>
+            <p>Limite Total</p>
+          </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-box">
-          <h3>€<?=number_format($totalLimit - $totalBalance, 2)?></h3>
-          <p>Disponível</p>
+        <div class="col-4">
+          <div class="stat-item">
+            <h3 class="text-success">€<?=number_format($totalLimit - $totalBalance, 2)?></h3>
+            <p>Disponível</p>
+          </div>
         </div>
       </div>
     </div>
