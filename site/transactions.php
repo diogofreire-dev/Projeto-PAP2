@@ -195,10 +195,10 @@ foreach ($transactions as $t) {
       font-weight: 600;
     }
     .summary-card {
-      background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-      color: white;
+      background: white;
       border-radius: 16px;
       padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
     .stat-item {
       text-align: center;
@@ -208,11 +208,15 @@ foreach ($transactions as $t) {
       font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
+      color: #2c3e50;
     }
     .stat-item p {
       font-size: 13px;
-      opacity: 0.9;
       margin: 0;
+      color: #7f8c8d;
+    }
+    .stat-item:not(:last-child) {
+      border-right: 1px solid #e9ecef;
     }
     .btn-delete {
       padding: 6px 12px;
@@ -278,15 +282,15 @@ foreach ($transactions as $t) {
             <p>Transações</p>
           </div>
         </div>
-        <div class="col-4 border-start border-end" style="border-color: rgba(255,255,255,0.2) !important;">
+        <div class="col-4">
           <div class="stat-item">
-            <h3>€<?=number_format($total, 2)?></h3>
+            <h3 class="text-danger">€<?=number_format($total, 2)?></h3>
             <p>Total Gasto</p>
           </div>
         </div>
         <div class="col-4">
           <div class="stat-item">
-            <h3>€<?=count($transactions) > 0 ? number_format($total / count($transactions), 2) : '0.00'?></h3>
+            <h3 style="color: #3498db;">€<?=count($transactions) > 0 ? number_format($total / count($transactions), 2) : '0.00'?></h3>
             <p>Média</p>
           </div>
         </div>
