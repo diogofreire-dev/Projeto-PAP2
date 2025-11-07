@@ -7,6 +7,18 @@ $uid = $_SESSION['user_id'] ?? null;
 $message = '';
 $messageType = 'info';
 
+// Mapeamento de cores
+$cardColors = [
+    'purple' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'blue' => 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)',
+    'green' => 'linear-gradient(135deg, #13d168ff 0%, #005218ff 100%)',
+    'orange' => 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+    'red' => 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+    'pink' => 'linear-gradient(135deg, #E91E63 0%, #C2185B 100%)',
+    'teal' => 'linear-gradient(135deg, #00BCD4 0%, #0097A7 100%)',
+    'indigo' => 'linear-gradient(135deg, #3F51B5 0%, #303F9F 100%)'
+];
+
 // Ações: ativar/desativar/eliminar
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['action'])) {
     $cardId = intval($_POST['card_id'] ?? 0);
@@ -94,7 +106,6 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
     }
     .card-visual {
-      background: linear-gradient(135deg, #13d168ff 0%, #005218ff 100%);
       border-radius: 12px;
       padding: 20px;
       color: white;
@@ -115,7 +126,7 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
     }
     .card-visual-inactive {
-      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+      background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%) !important;
       opacity: 0.7;
     }
     .card-number {
@@ -228,12 +239,14 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
           $percentage = $c['limit_amount'] > 0 ? ($c['balance'] / $c['limit_amount']) * 100 : 0;
           $progressColor = $percentage >= 80 ? 'danger' : ($percentage >= 60 ? 'warning' : 'success');
           $available = $c['limit_amount'] - $c['balance'];
+          $cardColor = $c['color'] ?? 'purple';
+          $gradient = $cardColors[$cardColor] ?? $cardColors['purple'];
         ?>
         <div class="col-12 col-md-6 col-xl-4">
           <div class="card h-100">
             <div class="card-body p-4">
               <!-- Card Visual -->
-              <div class="card-visual <?=$c['active'] ? '' : 'card-visual-inactive'?> mb-3">
+              <div class="card-visual <?=$c['active'] ? '' : 'card-visual-inactive'?> mb-3" style="background: <?=$gradient?>;">
                 <div>
                   <div class="mb-2">
                     <i class="bi bi-credit-card" style="font-size: 28px;"></i>

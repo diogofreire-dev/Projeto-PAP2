@@ -7,11 +7,24 @@ $uid = $_SESSION['user_id'] ?? null;
 $errors = [];
 $success = false;
 
+// Cores disponíveis para os cartões
+$cardColors = [
+    'purple' => ['name' => 'Roxo', 'gradient' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'],
+    'blue' => ['name' => 'Azul', 'gradient' => 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)'],
+    'green' => ['name' => 'Verde', 'gradient' => 'linear-gradient(135deg, #13d168ff 0%, #005218ff 100%)'],
+    'orange' => ['name' => 'Laranja', 'gradient' => 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)'],
+    'red' => ['name' => 'Vermelho', 'gradient' => 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)'],
+    'pink' => ['name' => 'Rosa', 'gradient' => 'linear-gradient(135deg, #E91E63 0%, #C2185B 100%)'],
+    'teal' => ['name' => 'Turquesa', 'gradient' => 'linear-gradient(135deg, #00BCD4 0%, #0097A7 100%)'],
+    'indigo' => ['name' => 'Índigo', 'gradient' => 'linear-gradient(135deg, #3F51B5 0%, #303F9F 100%)']
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $last4 = trim($_POST['last4'] ?? '');
     $limit = floatval($_POST['limit_amount'] ?? 0);
     $balance = floatval($_POST['balance'] ?? 0);
+    $color = $_POST['color'] ?? 'purple';
 
     // Validações
     if (strlen($name) < 3) {
@@ -29,25 +42,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($balance > $limit) {
         $errors[] = 'O saldo não pode ser superior ao limite.';
     }
+    if (!array_key_exists($color, $cardColors)) {
+        $color = 'purple';
+    }
 
     if (empty($errors)) {
         try {
             $stmt = $pdo->prepare("
-                INSERT INTO cards (user_id, name, last4, limit_amount, balance, active) 
-                VALUES (:uid, :name, :last4, :limit, :balance, 1)
+                INSERT INTO cards (user_id, name, last4, limit_amount, balance, active, color) 
+                VALUES (:uid, :name, :last4, :limit, :balance, 1, :color)
             ");
             $stmt->execute([
                 ':uid' => $uid,
                 ':name' => $name,
                 ':last4' => $last4,
                 ':limit' => $limit,
-                ':balance' => $balance
+                ':balance' => $balance,
+                ':color' => $color
             ]);
             $success = true;
             
             // Limpar campos após sucesso
             $name = $last4 = '';
             $limit = $balance = 0;
+            $color = 'purple';
         } catch (PDOException $e) {
             $errors[] = 'Erro ao adicionar cartão. Tenta novamente.';
         }
@@ -120,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
     }
     .card-preview {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       border-radius: 16px;
       padding: 24px;
       color: white;
@@ -129,6 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       flex-direction: column;
       justify-content: space-between;
       box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transition: all 0.3s;
     }
     .card-preview .card-number {
       font-size: 24px;
@@ -148,6 +166,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .progress-bar-custom {
       background: var(--primary-green);
       border-radius: 10px;
+    }
+    
+    /* Seletor de cores */
+    .color-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .color-option {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .color-option:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .color-option input[type="radio"] {
+      display: none;
+    }
+    .color-option input[type="radio"]:checked + .color-display {
+      border-color: #2c3e50;
+      box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+    }
+    .color-display {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      border: 3px solid transparent;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .color-option input[type="radio"]:checked + .color-display::after {
+      content: '✓';
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
   </style>
 </head>
@@ -187,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="card">
             <div class="card-body p-4">
               <h5 class="mb-4"><i class="bi bi-eye"></i> Pré-visualização</h5>
-              <div class="card-preview">
+              <div class="card-preview" id="cardPreview" style="background: <?=$cardColors['purple']['gradient']?>;">
                 <div>
                   <div class="mb-3">
                     <i class="bi bi-credit-card" style="font-size: 32px;"></i>
@@ -257,6 +320,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="mb-3">
+                  <label class="form-label">Cor do Cartão *</label>
+                  <div class="color-selector">
+                    <?php foreach($cardColors as $colorKey => $colorData): ?>
+                      <label class="color-option">
+                        <input 
+                          type="radio" 
+                          name="color" 
+                          value="<?=$colorKey?>" 
+                          <?=($color ?? 'purple') === $colorKey ? 'checked' : ''?>
+                          data-gradient="<?=$colorData['gradient']?>"
+                        >
+                        <div class="color-display" style="background: <?=$colorData['gradient']?>;"></div>
+                      </label>
+                    <?php endforeach; ?>
+                  </div>
+                  <small class="text-muted mt-2 d-block">Escolhe uma cor para identificar facilmente o teu cartão</small>
+                </div>
+
+                <div class="mb-3">
                   <label class="form-label">Últimos 4 Dígitos *</label>
                   <input 
                     type="text" 
@@ -286,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       value="<?=htmlspecialchars($limit ?? 0)?>" 
                       required
                     >
-                    <small class="text-muted">O quanto é que poderás gastar expecificamente neste cartão</small>
+                    <small class="text-muted">O limite máximo de gastos</small>
                   </div>
 
                   <div class="col-md-6 mb-3">
@@ -301,7 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       min="0"
                       value="<?=htmlspecialchars($balance ?? 0)?>"
                     >
-                    <small class="text-muted">Se já tens gastos acumulados no cartão</small>
+                    <small class="text-muted">Se já tens gastos acumulados</small>
                   </div>
                 </div>
 
@@ -337,6 +419,14 @@ document.getElementById('cardLast4').addEventListener('input', function(e) {
 
 document.getElementById('cardLimit').addEventListener('input', updateUsage);
 document.getElementById('cardBalance').addEventListener('input', updateUsage);
+
+// Mudança de cor
+document.querySelectorAll('input[name="color"]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    const gradient = this.dataset.gradient;
+    document.getElementById('cardPreview').style.background = gradient;
+  });
+});
 
 function updateUsage() {
   const limit = parseFloat(document.getElementById('cardLimit').value) || 0;
