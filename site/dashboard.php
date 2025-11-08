@@ -248,7 +248,7 @@ $categoryColors = [
       align-items: center;
       justify-content: center;
       font-size: 24px;
-      margin-bottom: 12px;
+      flex-shrink: 0;
     }
     .stat-mini-card .stat-label {
       font-size: 13px;
@@ -259,6 +259,7 @@ $categoryColors = [
       font-size: 32px;
       font-weight: 800;
       margin-bottom: 4px;
+      line-height: 1;
     }
     .stat-mini-card .stat-description {
       font-size: 14px;
@@ -406,9 +407,9 @@ $categoryColors = [
             <?php endforeach; ?>
             
             <?php if ($remainingCount > 0): ?>
-              <div class="text-center mb-3 p-3 border rounded bg-light">
-                <i class="bi bi-plus-circle text-muted"></i>
-                <small class="text-muted d-block">+<?=$remainingCount?> cart<?=$remainingCount > 1 ? 'ões' : 'ão'?></small>
+              <div class="text-center p-2 border rounded bg-light">
+                <i class="bi bi-plus-circle text-muted" style="font-size: 14px;"></i>
+                <small class="text-muted ms-1">+<?=$remainingCount?> cart<?=$remainingCount > 1 ? 'ões' : 'ão'?></small>
               </div>
             <?php endif; ?>
             
@@ -427,12 +428,16 @@ $categoryColors = [
         <?php if ($biggestExpense): ?>
         <div class="col-md-6">
           <div class="stat-mini-card">
-            <div class="stat-icon" style="background: #fee; color: #e74c3c;">
-              <i class="bi bi-exclamation-circle"></i>
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="stat-label">Maior Despesa</div>
+                <div class="stat-value text-danger">€<?=number_format($biggestExpense['amount'],2)?></div>
+                <div class="stat-description"><?=htmlspecialchars($biggestExpense['description'])?></div>
+              </div>
+              <div class="stat-icon" style="background: #fee; color: #e74c3c;">
+                <i class="bi bi-exclamation-circle"></i>
+              </div>
             </div>
-            <div class="stat-label">Maior Despesa</div>
-            <div class="stat-value text-danger">€<?=number_format($biggestExpense['amount'],2)?></div>
-            <div class="stat-description"><?=htmlspecialchars($biggestExpense['description'])?></div>
           </div>
         </div>
         <?php endif; ?>
@@ -440,12 +445,16 @@ $categoryColors = [
         <?php if (!empty($categoryData)): ?>
         <div class="col-md-6">
           <div class="stat-mini-card">
-            <div class="stat-icon" style="background: #e8f8f5; color: var(--primary-green);">
-              <i class="bi bi-star-fill"></i>
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="stat-label">Categoria Top</div>
+                <div class="stat-value" style="color: var(--primary-green);"><?=htmlspecialchars($categoryData[0]['category'])?></div>
+                <div class="stat-description">€<?=number_format($categoryData[0]['total'],2)?> em <?=$categoryData[0]['count']?> transações</div>
+              </div>
+              <div class="stat-icon" style="background: #e8f8f5; color: var(--primary-green);">
+                <i class="bi bi-star-fill"></i>
+              </div>
             </div>
-            <div class="stat-label">Categoria Top</div>
-            <div class="stat-value" style="color: var(--primary-green);"><?=htmlspecialchars($categoryData[0]['category'])?></div>
-            <div class="stat-description">€<?=number_format($categoryData[0]['total'],2)?> em <?=$categoryData[0]['count']?> transações</div>
           </div>
         </div>
         <?php endif; ?>
@@ -482,9 +491,9 @@ $categoryColors = [
           <?php endforeach; ?>
           
           <?php if ($remainingCategories > 0): ?>
-            <div class="text-center mt-3 p-3 border rounded bg-light">
-              <i class="bi bi-plus-circle text-muted"></i>
-              <small class="text-muted d-block mb-2">+<?=$remainingCategories?> categoria<?=$remainingCategories > 1 ? 's' : ''?></small>
+            <div class="text-center mt-3 p-2 border rounded bg-light">
+              <i class="bi bi-plus-circle text-muted" style="font-size: 14px;"></i>
+              <small class="text-muted ms-1"><?=$remainingCategories?> categoria<?=$remainingCategories > 1 ? 's' : ''?></small>
             </div>
           <?php endif; ?>
           
@@ -551,9 +560,9 @@ $categoryColors = [
             </div>
             
             <?php if ($remainingTransactions > 0): ?>
-              <div class="text-center mb-3 p-3 border-top bg-light">
-                <i class="bi bi-plus-circle text-muted"></i>
-                <small class="text-muted d-block">+<?=$remainingTransactions?> transaç<?=$remainingTransactions > 1 ? 'ões' : 'ão'?> mais</small>
+              <div class="text-center mt-3 p-2 border rounded bg-light">
+                <i class="bi bi-plus-circle text-muted" style="font-size: 14px;"></i>
+                <small class="text-muted ms-1"><?=$remainingTransactions?> transaç<?=$remainingTransactions > 1 ? 'ões' : 'ão'?></small>
               </div>
             <?php endif; ?>
             
