@@ -155,7 +155,6 @@ $categoryColors = [
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
     .card:hover { transform: translateY(-5px); }
-    .stat-card { border-left: 4px solid var(--primary-green); }
     .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -175,6 +174,28 @@ $categoryColors = [
       border-color: var(--primary-green); 
     }
     .text-primary { color: var(--primary-green) !important; }
+    
+    /* Resumo rápido */
+    .summary-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .summary-stat {
+      margin-bottom: 20px;
+    }
+    .summary-stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary-green);
+      margin-bottom: 4px;
+    }
+    .summary-stat-label {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin: 0;
+    }
     
     /* Gráfico de barras custom */
     .category-bar-container {
@@ -207,61 +228,42 @@ $categoryColors = [
       background: linear-gradient(90deg, var(--bar-color), var(--bar-color-light));
     }
     
-    /* Stats cards */
+    /* Stats cards mini */
     .stat-mini-card {
       background: white;
       border-radius: 12px;
-      padding: 16px;
-      border-left: 3px solid;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      height: 100%;
+      transition: transform 0.2s;
     }
-    
-    /* Timeline */
-    .activity-timeline {
+    .stat-mini-card:hover {
+      transform: translateY(-5px);
+    }
+    .stat-mini-card .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
-      gap: 4px;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
     }
-    .activity-day {
-      flex: 1;
-      height: 80px;
-      background: #e9ecef;
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s;
+    .stat-mini-card .stat-label {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-bottom: 8px;
     }
-    .activity-day:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .stat-mini-card .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 4px;
     }
-    .activity-day-fill {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(180deg, var(--primary-green), var(--dark-green));
-      transition: height 0.8s ease-out;
-    }
-    .activity-day-label {
-      position: absolute;
-      bottom: 4px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 10px;
-      color: white;
-      font-weight: 600;
-    }
-    .activity-day-amount {
-      position: absolute;
-      top: 4px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: #2c3e50;
+    .stat-mini-card .stat-description {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin: 0;
     }
     
     .tendency-badge {
@@ -328,38 +330,40 @@ $categoryColors = [
   <div class="row g-4">
     <!-- Coluna esquerda: Resumo -->
     <div class="col-12 col-lg-4">
-      <div class="card shadow-sm stat-card">
-        <div class="card-body">
-          <h5 class="card-title mb-3"><i class="bi bi-graph-up"></i> Resumo Rápido</h5>
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">Gasto este mês</small>
-              <?php if ($tendency != 0): ?>
-                <span class="tendency-badge <?=$tendency > 0 ? 'tendency-up' : 'tendency-down'?>">
-                  <i class="bi bi-arrow-<?=$tendency > 0 ? 'up' : 'down'?>"></i>
-                  <?=abs(round($tendency))?>%
-                </span>
-              <?php endif; ?>
-            </div>
-            <h3 class="mb-0 text-primary">€<?=number_format($totalMonth,2)?></h3>
+      <div class="summary-card">
+        <h5 class="mb-4"><i class="bi bi-graph-up"></i> Resumo Rápido</h5>
+        
+        <div class="summary-stat">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="summary-stat-label">Gasto este mês</span>
+            <?php if ($tendency != 0): ?>
+              <span class="tendency-badge <?=$tendency > 0 ? 'tendency-up' : 'tendency-down'?>">
+                <i class="bi bi-arrow-<?=$tendency > 0 ? 'up' : 'down'?>"></i>
+                <?=abs(round($tendency))?>%
+              </span>
+            <?php endif; ?>
           </div>
-          <hr>
-          <div class="d-flex justify-content-between mb-2">
-            <span>Transações (30d)</span>
-            <strong><?=intval($count30)?></strong>
-          </div>
-          <div class="d-flex justify-content-between mb-3">
-            <span>Cartões ativos</span>
-            <strong><?=count($cards)?></strong>
-          </div>
-          <div class="d-grid gap-2">
-            <a href="create_transaction.php" class="btn btn-primary">
-              <i class="bi bi-plus-circle"></i> Nova Transação
-            </a>
-            <a href="add_card.php" class="btn btn-outline-primary">
-              <i class="bi bi-credit-card-2-front"></i> Adicionar Cartão
-            </a>
-          </div>
+          <div class="summary-stat-value">€<?=number_format($totalMonth,2)?></div>
+        </div>
+
+        <hr class="my-3">
+        
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Transações (30d)</span>
+          <strong><?=intval($count30)?></strong>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+          <span class="text-muted">Cartões ativos</span>
+          <strong><?=count($cards)?></strong>
+        </div>
+        
+        <div class="d-grid gap-2">
+          <a href="create_transaction.php" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nova Transação
+          </a>
+          <a href="add_card.php" class="btn btn-outline-primary">
+            <i class="bi bi-credit-card-2-front"></i> Adicionar Cartão
+          </a>
         </div>
       </div>
 
@@ -422,30 +426,26 @@ $categoryColors = [
       <div class="row g-3 mb-4">
         <?php if ($biggestExpense): ?>
         <div class="col-md-6">
-          <div class="stat-mini-card" style="border-left-color: #e74c3c;">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <small class="text-muted">Maior Despesa</small>
-                <h4 class="mb-0 text-danger">€<?=number_format($biggestExpense['amount'],2)?></h4>
-                <small class="text-muted"><?=htmlspecialchars($biggestExpense['description'])?></small>
-              </div>
-              <i class="bi bi-exclamation-circle text-danger" style="font-size: 24px;"></i>
+          <div class="stat-mini-card">
+            <div class="stat-icon" style="background: #fee; color: #e74c3c;">
+              <i class="bi bi-exclamation-circle"></i>
             </div>
+            <div class="stat-label">Maior Despesa</div>
+            <div class="stat-value text-danger">€<?=number_format($biggestExpense['amount'],2)?></div>
+            <div class="stat-description"><?=htmlspecialchars($biggestExpense['description'])?></div>
           </div>
         </div>
         <?php endif; ?>
         
         <?php if (!empty($categoryData)): ?>
         <div class="col-md-6">
-          <div class="stat-mini-card" style="border-left-color: var(--primary-green);">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <small class="text-muted">Categoria Top</small>
-                <h4 class="mb-0 text-primary"><?=htmlspecialchars($categoryData[0]['category'])?></h4>
-                <small class="text-muted">€<?=number_format($categoryData[0]['total'],2)?> em <?=$categoryData[0]['count']?> transações</small>
-              </div>
-              <i class="bi bi-star-fill text-warning" style="font-size: 24px;"></i>
+          <div class="stat-mini-card">
+            <div class="stat-icon" style="background: #e8f8f5; color: var(--primary-green);">
+              <i class="bi bi-star-fill"></i>
             </div>
+            <div class="stat-label">Categoria Top</div>
+            <div class="stat-value" style="color: var(--primary-green);"><?=htmlspecialchars($categoryData[0]['category'])?></div>
+            <div class="stat-description">€<?=number_format($categoryData[0]['total'],2)?> em <?=$categoryData[0]['count']?> transações</div>
           </div>
         </div>
         <?php endif; ?>
@@ -459,7 +459,7 @@ $categoryColors = [
           <h5 class="card-title mb-4"><i class="bi bi-bar-chart"></i> Gastos por Categoria</h5>
           <?php 
           $maxAmount = max(array_column($categoryData, 'total'));
-          $displayCategories = array_slice($categoryData, 0, 2); // Mostrar apenas 3 categorias
+          $displayCategories = array_slice($categoryData, 0, 2); // Mostrar apenas 2 categorias
           $remainingCategories = count($categoryData) - 2;
           
           foreach ($displayCategories as $cat): 
@@ -520,7 +520,7 @@ $categoryColors = [
                 </thead>
                 <tbody>
                   <?php 
-                  $displayTransactions = array_slice($recent, 0, 3); // Mostrar apenas 5 transações
+                  $displayTransactions = array_slice($recent, 0, 3); // Mostrar apenas 3 transações
                   $remainingTransactions = count($recent) - 3;
                   
                   foreach($displayTransactions as $r): ?>
@@ -576,13 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
       bar.style.width = bar.dataset.width;
     });
   }, 100);
-  
-  // Animar timeline de atividade
-  setTimeout(() => {
-    document.querySelectorAll('.activity-day-fill').forEach(fill => {
-      fill.style.height = fill.dataset.height;
-    });
-  }, 300);
 });
 </script>
 </body>
