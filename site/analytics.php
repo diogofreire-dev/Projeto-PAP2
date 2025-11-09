@@ -225,24 +225,30 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       transition: width 1s ease-out;
     }
     
-    .stat-card {
+    /* Stats resumo */
+    .summary-card {
       background: white;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      border-left: 4px solid;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-    
-    .stat-card h3 {
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+    }
+    .stat-item h3 {
       font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
+      color: #2c3e50;
     }
-    
-    .stat-card p {
-      color: #7f8c8d;
+    .stat-item p {
+      font-size: 13px;
       margin: 0;
-      font-size: 14px;
+      color: #7f8c8d;
+    }
+    .stat-item:not(:last-child) {
+      border-right: 1px solid #e9ecef;
     }
   </style>
 </head>
@@ -339,29 +345,31 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
   <?php else: ?>
 
   <!-- Estatísticas -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="stat-card" style="border-left-color: var(--primary-green);">
-        <h3 class="text-success">€<?=number_format($totalYear, 2)?></h3>
-        <p>Total Gasto</p>
+  <div class="summary-card mb-4">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="stat-item">
+          <h3 class="text-success">€<?=number_format($totalYear, 2)?></h3>
+          <p>Total Gasto</p>
+        </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card" style="border-left-color: #3498db;">
-        <h3 class="text-primary"><?=$stats['total_transactions']?></h3>
-        <p>Transações</p>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <h3 style="color: #3498db;"><?=$stats['total_transactions']?></h3>
+          <p>Transações</p>
+        </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card" style="border-left-color: #f39c12;">
-        <h3 class="text-warning">€<?=number_format($stats['avg_amount'], 2)?></h3>
-        <p>Média por Transação</p>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <h3 style="color: #f39c12;">€<?=number_format($stats['avg_amount'], 2)?></h3>
+          <p>Média por Transação</p>
+        </div>
       </div>
-    </div>
-    <div class="col-md-3">
-      <div class="stat-card" style="border-left-color: #e74c3c;">
-        <h3 class="text-danger">€<?=number_format($stats['max_amount'], 2)?></h3>
-        <p>Maior Gasto</p>
+      <div class="col-md-3">
+        <div class="stat-item">
+          <h3 class="text-danger">€<?=number_format($stats['max_amount'], 2)?></h3>
+          <p>Maior Gasto</p>
+        </div>
       </div>
     </div>
   </div>
