@@ -250,6 +250,20 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     .stat-item:not(:last-child) {
       border-right: 1px solid #e9ecef;
     }
+    
+    /* Card usage styling */
+    .card-usage-item {
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    
+    .card-usage-item .progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 1s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -374,6 +388,97 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     </div>
   </div>
 
+  <!-- Gráficos de Cartões -->
+  <div class="row mb-4">
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="bi bi-pie-chart"></i> Distribuição de Gastos por Cartão
+          </h5>
+          <div class="chart-container" style="height: 300px;">
+            <canvas id="cardPieChart"></canvas>
+          </div>
+          <div class="mt-3 text-center">
+            <small class="text-muted">Mostra a distribuição percentual de gastos entre os teus cartões</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="bi bi-speedometer"></i> Utilização dos Limites dos Cartões
+          </h5>
+          <div id="cardUsageChart" style="max-height: 350px; overflow-y: auto;">
+            <?php
+            // Buscar dados dos cartões
+            $stmtCards = $pdo->prepare("
+              SELECT c.*, COALESCE(SUM(t.amount), 0) as spent_amount
+              FROM cards c
+              LEFT JOIN transactions t ON t.card_id = c.id 
+                AND YEAR(t.created_at) = :year
+                " . ($card_id ? "AND c.id = :cid" : "") . "
+              WHERE c.user_id = :uid
+              GROUP BY c.id
+              ORDER BY (c.balance / NULLIF(c.limit_amount, 0)) DESC
+            ");
+            $cardParams = [':uid' => $uid, ':year' => $year];
+            if ($card_id) {
+              $cardParams[':cid'] = $card_id;
+            }
+            $stmtCards->execute($cardParams);
+            $cardsData = $stmtCards->fetchAll();
+            
+            if (empty($cardsData)): ?>
+              <div class="text-center py-4">
+                <i class="bi bi-credit-card" style="font-size: 48px; color: #e0e0e0;"></i>
+                <p class="text-muted mt-3 mb-0">Sem cartões registados</p>
+              </div>
+            <?php else:
+              foreach($cardsData as $cardData):
+                $usagePercent = $cardData['limit_amount'] > 0 ? 
+                  ($cardData['balance'] / $cardData['limit_amount']) * 100 : 0;
+                $progressColor = $usagePercent >= 80 ? 'danger' : 
+                  ($usagePercent >= 60 ? 'warning' : 'success');
+            ?>
+              <div class="card-usage-item mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                  <div>
+                    <strong><?=htmlspecialchars($cardData['name'])?></strong>
+                    <small class="text-muted ms-2">•••• <?=htmlspecialchars($cardData['last4'])?></small>
+                  </div>
+                  <strong class="text-<?=$progressColor?>"><?=round($usagePercent)?>%</strong>
+                </div>
+                <div class="progress" style="height: 24px; border-radius: 8px;">
+                  <div class="progress-bar bg-<?=$progressColor?>" 
+                       style="width: 0%;"
+                       data-width="<?=min($usagePercent, 100)?>%"
+                       role="progressbar">
+                    <small class="fw-semibold">
+                      €<?=number_format($cardData['balance'], 2)?> / €<?=number_format($cardData['limit_amount'], 2)?>
+                    </small>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between mt-1">
+                  <small class="text-muted">
+                    Disponível: €<?=number_format($cardData['limit_amount'] - $cardData['balance'], 2)?>
+                  </small>
+                  <small class="text-muted">
+                    Gasto no período: €<?=number_format($cardData['spent_amount'], 2)?>
+                  </small>
+                </div>
+              </div>
+            <?php endforeach; 
+            endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Gráfico de Linhas -->
   <div class="card mb-4">
     <div class="card-body">
@@ -434,12 +539,12 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// Dados do gráfico
+// Dados do gráfico de linhas
 const monthlyData = <?=json_encode($monthlyData)?>;
 const categoryColors = <?=json_encode($categoryColors)?>;
 const months = <?=json_encode($months)?>;
 
-// Configurar Chart.js
+// Configurar Chart.js para gráfico de linhas
 const ctx = document.getElementById('lineChart').getContext('2d');
 
 const datasets = Object.keys(monthlyData).map(category => ({
@@ -456,7 +561,7 @@ const datasets = Object.keys(monthlyData).map(category => ({
   pointBorderWidth: 2
 }));
 
-const chart = new Chart(ctx, {
+const lineChart = new Chart(ctx, {
   type: 'line',
   data: {
     labels: months,
@@ -484,7 +589,6 @@ const chart = new Chart(ctx, {
           size: 13
         },
         filter: function(tooltipItem) {
-          // Apenas mostrar categorias com valores > 0
           return tooltipItem.parsed.y > 0;
         },
         callbacks: {
@@ -515,20 +619,108 @@ const chart = new Chart(ctx, {
   }
 });
 
-// Interatividade da legenda
+// Gráfico de Pizza - Distribuição por Cartão
+const cardPieCtx = document.getElementById('cardPieChart').getContext('2d');
+
+<?php
+// Buscar gastos por cartão no ano selecionado
+$stmtCardSpending = $pdo->prepare("
+  SELECT c.name, c.last4, COALESCE(SUM(t.amount), 0) as total
+  FROM cards c
+  LEFT JOIN transactions t ON t.card_id = c.id 
+    AND YEAR(t.created_at) = :year
+    " . ($card_id ? "AND c.id = :cid" : "") . "
+  WHERE c.user_id = :uid
+  GROUP BY c.id
+  HAVING total > 0
+  ORDER BY total DESC
+");
+$cardSpendParams = [':uid' => $uid, ':year' => $year];
+if ($card_id) {
+  $cardSpendParams[':cid'] = $card_id;
+}
+$stmtCardSpending->execute($cardSpendParams);
+$cardSpending = $stmtCardSpending->fetchAll();
+
+$cardLabels = array_map(function($c) {
+  return $c['name'] . ' (' . $c['last4'] . ')';
+}, $cardSpending);
+$cardData = array_map(function($c) {
+  return floatval($c['total']);
+}, $cardSpending);
+?>
+
+const cardPieData = {
+  labels: <?=json_encode($cardLabels)?>,
+  datasets: [{
+    data: <?=json_encode($cardData)?>,
+    backgroundColor: [
+      '#3498db',
+      '#e74c3c', 
+      '#f39c12',
+      '#1abc9c',
+      '#9b59b6',
+      '#34495e',
+      '#e67e22',
+      '#95a5a6'
+    ],
+    borderWidth: 2,
+    borderColor: '#fff'
+  }]
+};
+
+const cardPieChart = new Chart(cardPieCtx, {
+  type: 'doughnut',
+  data: cardPieData,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 15,
+          font: {
+            size: 12
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        callbacks: {
+          label: function(context) {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
+            return label + ': €' + value.toFixed(2) + ' (' + percentage + '%)';
+          }
+        }
+      }
+    }
+  }
+});
+
+// Interatividade da legenda do gráfico de linhas
 document.querySelectorAll('.legend-item').forEach((item, index) => {
   item.addEventListener('click', function() {
-    const meta = chart.getDatasetMeta(index);
+    const meta = lineChart.getDatasetMeta(index);
     meta.hidden = !meta.hidden;
-    chart.update();
+    lineChart.update();
     this.style.opacity = meta.hidden ? '0.3' : '1';
   });
 });
 
-// Animar barras
+// Animar barras de categoria
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => {
     document.querySelectorAll('.bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+    
+    // Animar barras de utilização dos cartões
+    document.querySelectorAll('#cardUsageChart .progress-bar').forEach(bar => {
       bar.style.width = bar.dataset.width;
     });
   }, 100);
