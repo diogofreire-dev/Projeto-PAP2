@@ -317,10 +317,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-4">
                   <label class="form-label">Cartão Associado</label>
                   <select name="card_id" class="form-select">
-                    <option value="">💰 Nenhum / Dinheiro</option>
+                    <option value="">Nenhum / Dinheiro</option>
                     <?php foreach($cards as $c): ?>
                       <option value="<?=$c['id']?>" <?=($card_id ?? '') == $c['id'] ? 'selected' : ''?>>
-                        💳 <?=htmlspecialchars($c['name'])?> (•••• <?=htmlspecialchars($c['last4'])?>)
+                        <?=htmlspecialchars($c['name'])?> (•••• <?=htmlspecialchars($c['last4'])?>)
                         - Disponível: €<?=number_format($c['limit_amount'] - $c['balance'], 2)?>
                       </option>
                     <?php endforeach; ?>
