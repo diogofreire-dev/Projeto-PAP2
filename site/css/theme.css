@@ -1,0 +1,247 @@
+/* site/css/theme.css */
+
+/* Tema Claro (Padrão) */
+:root[data-theme="light"] {
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-hover: #f0f0f0;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border-color: #e9ecef;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --navbar-bg: #ffffff;
+}
+
+/* Tema Escuro */
+:root[data-theme="dark"] {
+  --bg-primary: #1a1d29;
+  --bg-secondary: #252936;
+  --bg-hover: #2d3142;
+  --text-primary: #ecf0f1;
+  --text-secondary: #95a5a6;
+  --border-color: #34495e;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --navbar-bg: #252936;
+}
+
+/* Aplicar transições suaves */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ajustes específicos para o tema escuro */
+[data-theme="dark"] .navbar-light {
+  background: var(--navbar-bg) !important;
+}
+
+[data-theme="dark"] .navbar-light .navbar-brand,
+[data-theme="dark"] .navbar-light .nav-link {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .navbar-light .nav-link:hover {
+  color: #2ecc71 !important;
+}
+
+[data-theme="dark"] .navbar-toggler {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+[data-theme="dark"] .dropdown-menu {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .dropdown-divider {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .table {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .table-light {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .badge {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge.bg-success {
+  background: #27ae60 !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .badge.bg-danger {
+  background: #c0392b !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .badge.bg-warning {
+  background: #f39c12 !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .badge.bg-info {
+  background: #3498db !important;
+  color: white !important;
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .alert {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .alert-success {
+  background: rgba(39, 174, 96, 0.2);
+  border-color: #27ae60;
+  color: #2ecc71;
+}
+
+[data-theme="dark"] .alert-danger {
+  background: rgba(192, 57, 43, 0.2);
+  border-color: #c0392b;
+  color: #e74c3c;
+}
+
+[data-theme="dark"] .alert-warning {
+  background: rgba(243, 156, 18, 0.2);
+  border-color: #f39c12;
+  color: #f39c12;
+}
+
+[data-theme="dark"] .alert-info {
+  background: rgba(52, 152, 219, 0.2);
+  border-color: #3498db;
+  color: #3498db;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-outline-primary {
+  color: #2ecc71;
+  border-color: #2ecc71;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+  background: #2ecc71;
+  border-color: #2ecc71;
+  color: white;
+}
+
+[data-theme="dark"] .btn-outline-danger {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+[data-theme="dark"] .btn-outline-danger:hover {
+  background: #e74c3c;
+  border-color: #e74c3c;
+  color: white;
+}
+
+/* Ajustes para inputs em tema escuro */
+[data-theme="dark"] .form-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .progress {
+  background: var(--bg-hover);
+}
+
+/* Ajustes para o card visual dos cartões */
+[data-theme="dark"] .card-visual-inactive {
+  opacity: 0.5;
+}
+
+/* Ajustes para modais (se existirem) */
+[data-theme="dark"] .modal-content {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-header {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-footer {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .close {
+  color: var(--text-primary);
+}
+
+/* Ajustes para a barra de progresso */
+[data-theme="dark"] .category-bar-wrapper {
+  background: var(--bg-hover);
+}
+
+[data-theme="dark"] .progress-custom {
+  background: var(--bg-hover);
+}
+
+/* Ajustes para itens de transação */
+[data-theme="dark"] .transaction-item {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .category-badge {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .day-separator {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Footer dark mode */
+[data-theme="dark"] footer {
+  background: var(--bg-secondary);
+}
+
+/* Inputs específicos */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-primary) inset;
+  -webkit-text-fill-color: var(--text-primary);
+}
