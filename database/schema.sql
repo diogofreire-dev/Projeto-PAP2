@@ -36,6 +36,18 @@ CREATE TABLE IF NOT EXISTS transactions (
   FOREIGN KEY (card_id) REFERENCES cards(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS user_settings (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL UNIQUE,
+  theme VARCHAR(10) DEFAULT 'light',
+  currency VARCHAR(3) DEFAULT 'EUR',
+  language VARCHAR(5) DEFAULT 'pt-PT',
+  notifications TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- substitui user_id por um id válido (ex.: 1)
 INSERT INTO cards (user_id, name, last4, limit_amount, balance, color) VALUES
 (1, 'Visa Principal', '1234', 1500.00, 300.00, 'purple'),
