@@ -2,6 +2,8 @@
 // site/add_card.php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/theme_helper.php';
+$currentTheme = getUserTheme($pdo, $uid);
 
 $uid = $_SESSION['user_id'] ?? null;
 $errors = [];
@@ -230,7 +232,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <li class="nav-item"><a class="nav-link active" href="cards.php"><i class="bi bi-wallet2"></i> Cartões</a></li>
         <li class="nav-item"><a class="nav-link" href="transactions.php"><i class="bi bi-receipt"></i> Transações</a></li>
         <li class="nav-item"><a class="nav-link" href="analytics.php"><i class="bi bi-graph-up"></i> Análise</a></li>
-        <li class="nav-item"><a class="nav-link" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle"></i> <?=htmlspecialchars($_SESSION['username'])?>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear"></i> Configurações</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+          </ul>
+        </li>      
       </ul>
     </div>
   </div>

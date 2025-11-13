@@ -2,6 +2,8 @@
 // site/analytics.php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/theme_helper.php';
+$currentTheme = getUserTheme($pdo, $uid);
 
 $uid = $_SESSION['user_id'] ?? null;
 
@@ -287,6 +289,8 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
             <i class="bi bi-person-circle"></i> <?=htmlspecialchars($_SESSION['username'])?>
           </a>
           <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear"></i> Configurações</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
           </ul>
         </li>
@@ -388,7 +392,7 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     </div>
   </div>
 
-  <!-- Gráficos de Cartões -->
+  <!-- Gráficos de Cartões e Insights -->
   <div class="row mb-4">
     <div class="col-lg-6">
       <div class="card">
@@ -396,12 +400,43 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
           <h5 class="card-title mb-4">
             <i class="bi bi-pie-chart"></i> Distribuição de Gastos por Cartão
           </h5>
-          <div class="chart-container" style="height: 300px;">
-            <canvas id="cardPieChart"></canvas>
-          </div>
-          <div class="mt-3 text-center">
-            <small class="text-muted">Mostra a distribuição percentual de gastos entre os teus cartões</small>
-          </div>
+          <?php
+          // Buscar gastos por cartão no ano selecionado
+          $stmtCardSpending = $pdo->prepare("
+            SELECT c.name, c.last4, COALESCE(SUM(t.amount), 0) as total
+            FROM cards c
+            LEFT JOIN transactions t ON t.card_id = c.id 
+              AND YEAR(t.created_at) = :year
+              " . ($card_id ? "AND c.id = :cid" : "") . "
+            WHERE c.user_id = :uid
+            GROUP BY c.id
+            HAVING total > 0
+            ORDER BY total DESC
+          ");
+          $cardSpendParams = [':uid' => $uid, ':year' => $year];
+          if ($card_id) {
+            $cardSpendParams[':cid'] = $card_id;
+          }
+          $stmtCardSpending->execute($cardSpendParams);
+          $cardSpending = $stmtCardSpending->fetchAll();
+          
+          if (empty($cardSpending)): ?>
+            <div class="text-center py-5">
+              <i class="bi bi-credit-card-2-front" style="font-size: 64px; color: #e0e0e0;"></i>
+              <h6 class="text-muted mt-3 mb-2">Sem transações por cartão</h6>
+              <p class="text-muted small mb-0">
+                Nenhum dos teus cartões tem transações registadas neste período.
+                <br>Começa por <a href="create_transaction.php">criar uma transação</a> e associá-la a um cartão.
+              </p>
+            </div>
+          <?php else: ?>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="cardPieChart"></canvas>
+            </div>
+            <div class="mt-3 text-center">
+              <small class="text-muted">Mostra a distribuição percentual de gastos entre os teus cartões</small>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
     </div>
@@ -410,70 +445,90 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       <div class="card">
         <div class="card-body">
           <h5 class="card-title mb-4">
-            <i class="bi bi-speedometer"></i> Utilização dos Limites dos Cartões
+            <i class="bi bi-trophy"></i> Top 5 Maiores Gastos
           </h5>
-          <div id="cardUsageChart" style="max-height: 350px; overflow-y: auto;">
+          <div style="max-height: 350px; overflow-y: auto;">
             <?php
-            // Buscar dados dos cartões
-            $stmtCards = $pdo->prepare("
-              SELECT c.*, COALESCE(SUM(t.amount), 0) as spent_amount
-              FROM cards c
-              LEFT JOIN transactions t ON t.card_id = c.id 
-                AND YEAR(t.created_at) = :year
-                " . ($card_id ? "AND c.id = :cid" : "") . "
-              WHERE c.user_id = :uid
-              GROUP BY c.id
-              ORDER BY (c.balance / NULLIF(c.limit_amount, 0)) DESC
+            // Buscar as 5 maiores transações do período
+            $stmtTopTransactions = $pdo->prepare("
+              SELECT t.*, c.name as card_name, c.last4
+              FROM transactions t
+              LEFT JOIN cards c ON c.id = t.card_id
+              WHERE t.user_id = :uid 
+              AND YEAR(t.created_at) = :year
+              " . ($card_id ? "AND t.card_id = :cid" : "") . "
+              ORDER BY t.amount DESC
+              LIMIT 5
             ");
-            $cardParams = [':uid' => $uid, ':year' => $year];
+            $topParams = [':uid' => $uid, ':year' => $year];
             if ($card_id) {
-              $cardParams[':cid'] = $card_id;
+              $topParams[':cid'] = $card_id;
             }
-            $stmtCards->execute($cardParams);
-            $cardsData = $stmtCards->fetchAll();
+            $stmtTopTransactions->execute($topParams);
+            $topTransactions = $stmtTopTransactions->fetchAll();
             
-            if (empty($cardsData)): ?>
+            if (empty($topTransactions)): ?>
               <div class="text-center py-4">
-                <i class="bi bi-credit-card" style="font-size: 48px; color: #e0e0e0;"></i>
-                <p class="text-muted mt-3 mb-0">Sem cartões registados</p>
+                <i class="bi bi-receipt" style="font-size: 48px; color: #e0e0e0;"></i>
+                <p class="text-muted mt-3 mb-0">Sem transações registadas</p>
               </div>
             <?php else:
-              foreach($cardsData as $cardData):
-                $usagePercent = $cardData['limit_amount'] > 0 ? 
-                  ($cardData['balance'] / $cardData['limit_amount']) * 100 : 0;
-                $progressColor = $usagePercent >= 80 ? 'danger' : 
-                  ($usagePercent >= 60 ? 'warning' : 'success');
+              $position = 1;
+              foreach($topTransactions as $topT):
+                $medalColor = match($position) {
+                  1 => '#FFD700',
+                  2 => '#C0C0C0',
+                  3 => '#CD7F32',
+                  default => '#95a5a6'
+                };
             ?>
-              <div class="card-usage-item mb-3">
-                <div class="d-flex justify-content-between mb-2">
-                  <div>
-                    <strong><?=htmlspecialchars($cardData['name'])?></strong>
-                    <small class="text-muted ms-2">•••• <?=htmlspecialchars($cardData['last4'])?></small>
+              <div class="card-usage-item mb-3" style="border-left: 4px solid <?=$medalColor?>;">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="flex-shrink-0 text-center" style="width: 40px;">
+                    <div style="font-size: 24px; font-weight: 800; color: <?=$medalColor?>;">
+                      #<?=$position?>
+                    </div>
                   </div>
-                  <strong class="text-<?=$progressColor?>"><?=round($usagePercent)?>%</strong>
-                </div>
-                <div class="progress" style="height: 24px; border-radius: 8px;">
-                  <div class="progress-bar bg-<?=$progressColor?>" 
-                       style="width: 0%;"
-                       data-width="<?=min($usagePercent, 100)?>%"
-                       role="progressbar">
-                    <small class="fw-semibold">
-                      €<?=number_format($cardData['balance'], 2)?> / €<?=number_format($cardData['limit_amount'], 2)?>
-                    </small>
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold mb-1"><?=htmlspecialchars($topT['description'])?></div>
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                      <?php if($topT['category']): ?>
+                        <small class="badge bg-secondary"><?=htmlspecialchars($topT['category'])?></small>
+                      <?php endif; ?>
+                      <?php if($topT['card_name']): ?>
+                        <small class="text-muted">
+                          <i class="bi bi-credit-card"></i> <?=htmlspecialchars($topT['card_name'])?> (<?=htmlspecialchars($topT['last4'])?>)
+                        </small>
+                      <?php endif; ?>
+                      <small class="text-muted">
+                        <i class="bi bi-calendar"></i> <?=date('d/m/Y', strtotime($topT['created_at']))?>
+                      </small>
+                    </div>
                   </div>
-                </div>
-                <div class="d-flex justify-content-between mt-1">
-                  <small class="text-muted">
-                    Disponível: €<?=number_format($cardData['limit_amount'] - $cardData['balance'], 2)?>
-                  </small>
-                  <small class="text-muted">
-                    Gasto no período: €<?=number_format($cardData['spent_amount'], 2)?>
-                  </small>
+                  <div class="flex-shrink-0 text-end">
+                    <div class="fw-bold text-danger" style="font-size: 18px;">
+                      €<?=number_format($topT['amount'], 2)?>
+                    </div>
+                    <?php if ($totalYear > 0): ?>
+                      <small class="text-muted">
+                        <?=round(($topT['amount'] / $totalYear) * 100, 1)?>% do total
+                      </small>
+                    <?php endif; ?>
+                  </div>
                 </div>
               </div>
-            <?php endforeach; 
+            <?php 
+                $position++;
+              endforeach; 
             endif; ?>
           </div>
+          <?php if (!empty($topTransactions)): ?>
+            <div class="text-center mt-3">
+              <small class="text-muted">
+                <i class="bi bi-info-circle"></i> Estas são as tuas maiores despesas em <?=$year?>
+              </small>
+            </div>
+          <?php endif; ?>
         </div>
       </div>
     </div>
@@ -619,29 +674,7 @@ const lineChart = new Chart(ctx, {
   }
 });
 
-// Gráfico de Pizza - Distribuição por Cartão
-const cardPieCtx = document.getElementById('cardPieChart').getContext('2d');
-
 <?php
-// Buscar gastos por cartão no ano selecionado
-$stmtCardSpending = $pdo->prepare("
-  SELECT c.name, c.last4, COALESCE(SUM(t.amount), 0) as total
-  FROM cards c
-  LEFT JOIN transactions t ON t.card_id = c.id 
-    AND YEAR(t.created_at) = :year
-    " . ($card_id ? "AND c.id = :cid" : "") . "
-  WHERE c.user_id = :uid
-  GROUP BY c.id
-  HAVING total > 0
-  ORDER BY total DESC
-");
-$cardSpendParams = [':uid' => $uid, ':year' => $year];
-if ($card_id) {
-  $cardSpendParams[':cid'] = $card_id;
-}
-$stmtCardSpending->execute($cardSpendParams);
-$cardSpending = $stmtCardSpending->fetchAll();
-
 $cardLabels = array_map(function($c) {
   return $c['name'] . ' (' . $c['last4'] . ')';
 }, $cardSpending);
@@ -649,6 +682,10 @@ $cardData = array_map(function($c) {
   return floatval($c['total']);
 }, $cardSpending);
 ?>
+
+// Gráfico de Pizza - Distribuição por Cartão
+<?php if (!empty($cardSpending)): ?>
+const cardPieCtx = document.getElementById('cardPieChart').getContext('2d');
 
 const cardPieData = {
   labels: <?=json_encode($cardLabels)?>,
@@ -701,6 +738,7 @@ const cardPieChart = new Chart(cardPieCtx, {
     }
   }
 });
+<?php endif; ?>
 
 // Interatividade da legenda do gráfico de linhas
 document.querySelectorAll('.legend-item').forEach((item, index) => {
@@ -716,11 +754,6 @@ document.querySelectorAll('.legend-item').forEach((item, index) => {
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => {
     document.querySelectorAll('.bar-fill').forEach(bar => {
-      bar.style.width = bar.dataset.width;
-    });
-    
-    // Animar barras de utilização dos cartões
-    document.querySelectorAll('#cardUsageChart .progress-bar').forEach(bar => {
       bar.style.width = bar.dataset.width;
     });
   }, 100);

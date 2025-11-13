@@ -2,6 +2,8 @@
 // site/cards.php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/theme_helper.php';
+$currentTheme = getUserTheme($pdo, $uid);
 
 $uid = $_SESSION['user_id'] ?? null;
 $message = '';
@@ -66,7 +68,7 @@ $totalBalance = array_sum(array_column($cards, 'balance'));
 $activeCards = count(array_filter($cards, fn($c) => $c['active']));
 ?>
 <!doctype html>
-<html lang="pt-PT">
+<html lang="pt-PT" data-theme="<?=$currentTheme?>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -188,6 +190,8 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
             <i class="bi bi-person-circle"></i> <?=htmlspecialchars($_SESSION['username'])?>
           </a>
           <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="settings.php"><i class="bi bi-gear"></i> Configurações</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
           </ul>
         </li>
