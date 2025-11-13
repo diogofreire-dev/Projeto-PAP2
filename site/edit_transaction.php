@@ -2,10 +2,10 @@
 // site/edit_transaction.php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
+$uid = $_SESSION['user_id'] ?? null;
 require_once __DIR__ . '/theme_helper.php';
 $currentTheme = getUserTheme($pdo, $uid);
 
-$uid = $_SESSION['user_id'] ?? null;
 $errors = [];
 $success = false;
 

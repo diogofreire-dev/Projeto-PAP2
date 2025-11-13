@@ -2,10 +2,10 @@
 // site/analytics.php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../config/db.php';
+$uid = $_SESSION['user_id'] ?? null;
 require_once __DIR__ . '/theme_helper.php';
 $currentTheme = getUserTheme($pdo, $uid);
 
-$uid = $_SESSION['user_id'] ?? null;
 
 // Filtros
 $year = !empty($_GET['year']) ? intval($_GET['year']) : date('Y');
