@@ -182,6 +182,7 @@ $categoryColors = [
     .btn-outline-primary:hover { 
       background: var(--primary-green); 
       border-color: var(--primary-green); 
+      color: white;
     }
     .text-primary { color: var(--primary-green) !important; }
     
@@ -298,6 +299,23 @@ $categoryColors = [
       color: #0a0;
     }
     
+    /* Transação item */
+    .transaction-item {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .transaction-item:hover {
+      background: var(--bg-hover);
+      border-color: var(--primary-green);
+    }
+    .transaction-item:last-child {
+      margin-bottom: 0;
+    }
+    
     /* Tema escuro - ajustes */
     [data-theme="dark"] .text-muted {
       color: var(--text-secondary) !important;
@@ -309,14 +327,18 @@ $categoryColors = [
       background: var(--bg-hover) !important;
       color: var(--text-primary);
     }
-    [data-theme="dark"] .table-light {
-      background: var(--bg-hover);
-      color: var(--text-primary);
+    [data-theme="dark"] .badge {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary) !important;
+    }
+    [data-theme="dark"] .badge.bg-info {
+      background: #3498db !important;
+      color: white !important;
     }
   </style>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<body>
+<nav class="navbar navbar-expand-lg navbar-light">
   <div class="container">
     <a class="navbar-brand fw-bold" href="index.php">
       <img src="assets/logo2.png" alt="Freecard">
@@ -410,7 +432,7 @@ $categoryColors = [
             </div>
           <?php else: ?>
             <?php 
-            $displayCards = array_slice($cards, 0, 3); // Mostrar apenas 3 cartões
+            $displayCards = array_slice($cards, 0, 3);
             $remainingCount = count($cards) - 3;
             foreach($displayCards as $c): ?>
               <?php 
@@ -444,7 +466,7 @@ $categoryColors = [
               </div>
             <?php endif; ?>
             
-            <a href="cards.php" class="btn btn-sm btn-outline-secondary w-100">Gerir todos os cartões</a>
+            <a href="cards.php" class="btn btn-sm btn-outline-secondary w-100 mt-2">Gerir todos os cartões</a>
           <?php endif; ?>
         </div>
       </div>
@@ -499,7 +521,7 @@ $categoryColors = [
           <h5 class="card-title mb-4"><i class="bi bi-bar-chart"></i> Gastos por Categoria</h5>
           <?php 
           $maxAmount = max(array_column($categoryData, 'total'));
-          $displayCategories = array_slice($categoryData, 0, 2); // Mostrar apenas 2 categorias
+          $displayCategories = array_slice($categoryData, 0, 2);
           $remainingCategories = count($categoryData) - 2;
           
           foreach ($displayCategories as $cat): 
@@ -537,7 +559,7 @@ $categoryColors = [
 
       <!-- Últimas Transações -->
       <div class="card shadow-sm">
-        <div class="card-header bg-white">
+        <div class="card-header" style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
           <h5 class="mb-0"><i class="bi bi-receipt"></i> Últimas Transações</h5>
         </div>
         <div class="card-body">
@@ -547,53 +569,41 @@ $categoryColors = [
               <a href="create_transaction.php" class="btn btn-primary">Criar primeira transação</a>
             </div>
           <?php else: ?>
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead class="table-light">
-                  <tr>
-                    <th>Data</th>
-                    <th>Descrição</th>
-                    <th>Categoria</th>
-                    <th>Cartão</th>
-                    <th class="text-end">Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
-                  $displayTransactions = array_slice($recent, 0, 3); // Mostrar apenas 3 transações
-                  $remainingTransactions = count($recent) - 3;
-                  
-                  foreach($displayTransactions as $r): ?>
-                    <tr>
-                      <td><?=date('d/m/Y H:i', strtotime($r['created_at']))?></td>
-                      <td><?=htmlspecialchars($r['description'] ?: '-')?></td>
-                      <td>
-                        <?php if($r['category']): ?>
-                          <span class="badge bg-info"><?=htmlspecialchars($r['category'])?></span>
-                        <?php else: ?>
-                          <span class="text-muted">-</span>
-                        <?php endif; ?>
-                      </td>
-                      <td>
-                        <?php if($r['card_name']): ?>
-                          <small><?=htmlspecialchars($r['card_name'])?> (<?=htmlspecialchars($r['last4'])?>)</small>
-                        <?php else: ?>
-                          <span class="text-muted">-</span>
-                        <?php endif; ?>
-                      </td>
-                      <td class="text-end">
-                        <strong class="text-danger">-€<?=number_format($r['amount'],2)?></strong>
-                      </td>
-                    </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
+            <?php 
+            $displayTransactions = array_slice($recent, 0, 3);
+            $remainingTransactions = count($recent) - 3;
+            
+            foreach($displayTransactions as $r): ?>
+              <div class="transaction-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1">
+                    <div class="fw-semibold mb-1"><?=htmlspecialchars($r['description'] ?: '-')?></div>
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                      <small class="text-muted">
+                        <i class="bi bi-calendar"></i> <?=date('d/m/Y H:i', strtotime($r['created_at']))?>
+                      </small>
+                      <?php if($r['category']): ?>
+                        <span class="badge bg-info"><?=htmlspecialchars($r['category'])?></span>
+                      <?php endif; ?>
+                      <?php if($r['card_name']): ?>
+                        <small class="text-muted">
+                          <i class="bi bi-credit-card"></i>
+                          <?=htmlspecialchars($r['card_name'])?> (<?=htmlspecialchars($r['last4'])?>)
+                        </small>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                  <div class="text-end ms-3">
+                    <strong class="text-danger">-€<?=number_format($r['amount'],2)?></strong>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
             
             <?php if ($remainingTransactions > 0): ?>
               <div class="text-center mt-3 p-2 border rounded bg-light">
                 <i class="bi bi-plus-circle text-muted" style="font-size: 14px;"></i>
-                <small class="text-muted ms-1"><?=$remainingTransactions?> transaç<?=$remainingTransactions > 1 ? 'ões' : 'ão'?></small>
+                <small class="text-muted ms-1">+<?=$remainingTransactions?> transaç<?=$remainingTransactions > 1 ? 'ões' : 'ão'?></small>
               </div>
             <?php endif; ?>
             

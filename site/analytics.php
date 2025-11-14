@@ -58,19 +58,18 @@ $stmt->execute($params);
 $results = $stmt->fetchAll();
 
 foreach ($results as $row) {
-    $month = intval($row['month']) - 1; // Converter para índice 0-11
+    $month = intval($row['month']) - 1;
     $category = $row['category'];
     $total = floatval($row['total']);
     
     if (isset($monthlyData[$category])) {
         $monthlyData[$category][$month] = $total;
     } else {
-        // Se a categoria não existe na lista, adicionar aos "Outros"
         $monthlyData['Outros'][$month] += $total;
     }
 }
 
-// Total por categoria (para o gráfico de barras)
+// Total por categoria
 $stmt = $pdo->prepare("
     SELECT 
         COALESCE(category, 'Outros') as category,
@@ -119,7 +118,7 @@ $categoryColors = [
 $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 ?>
 <!doctype html>
-<html lang="pt-PT">
+<html lang="pt-PT" data-theme="<?=$currentTheme?>">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -134,11 +133,12 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8f9fa;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .navbar { 
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-      background: white;
+      background: var(--navbar-bg);
     }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -152,15 +152,16 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     .card {
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     
-    /* Gráfico de Linhas */
     .chart-container {
       position: relative;
       height: 400px;
       padding: 20px;
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 16px;
     }
     
@@ -191,7 +192,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       border-radius: 2px;
     }
     
-    /* Gráfico de Barras Horizontal */
     .bar-chart {
       padding: 20px 0;
     }
@@ -208,7 +208,7 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     }
     
     .bar-container {
-      background: #f0f0f0;
+      background: var(--bg-hover);
       border-radius: 10px;
       height: 32px;
       position: relative;
@@ -228,12 +228,11 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       transition: width 1s ease-out;
     }
     
-    /* Stats resumo */
     .summary-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
     }
     .stat-item {
       text-align: center;
@@ -243,21 +242,20 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
-      color: #2c3e50;
+      color: var(--text-primary);
     }
     .stat-item p {
       font-size: 13px;
       margin: 0;
-      color: #7f8c8d;
+      color: var(--text-secondary);
     }
     .stat-item:not(:last-child) {
-      border-right: 1px solid #e9ecef;
+      border-right: 1px solid var(--border-color);
     }
     
-    /* Card usage styling */
     .card-usage-item {
       padding: 12px;
-      background: #f8f9fa;
+      background: var(--bg-primary);
       border-radius: 8px;
     }
     
@@ -266,6 +264,11 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
       align-items: center;
       justify-content: center;
       transition: width 1s ease-out;
+    }
+    
+    /* Tema escuro */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
     }
   </style>
 </head>
@@ -402,7 +405,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
             <i class="bi bi-pie-chart"></i> Distribuição de Gastos por Cartão
           </h5>
           <?php
-          // Buscar gastos por cartão no ano selecionado
           $stmtCardSpending = $pdo->prepare("
             SELECT c.name, c.last4, COALESCE(SUM(t.amount), 0) as total
             FROM cards c
@@ -427,7 +429,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
               <h6 class="text-muted mt-3 mb-2">Sem transações por cartão</h6>
               <p class="text-muted small mb-0">
                 Nenhum dos teus cartões tem transações registadas neste período.
-                <br>Começa por <a href="create_transaction.php">criar uma transação</a> e associá-la a um cartão.
               </p>
             </div>
           <?php else: ?>
@@ -450,7 +451,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
           </h5>
           <div style="max-height: 350px; overflow-y: auto;">
             <?php
-            // Buscar as 5 maiores transações do período
             $stmtTopTransactions = $pdo->prepare("
               SELECT t.*, c.name as card_name, c.last4
               FROM transactions t
@@ -523,13 +523,6 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
               endforeach; 
             endif; ?>
           </div>
-          <?php if (!empty($topTransactions)): ?>
-            <div class="text-center mt-3">
-              <small class="text-muted">
-                <i class="bi bi-info-circle"></i> Estas são as tuas maiores despesas em <?=$year?>
-              </small>
-            </div>
-          <?php endif; ?>
         </div>
       </div>
     </div>
@@ -595,12 +588,10 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-// Dados do gráfico de linhas
 const monthlyData = <?=json_encode($monthlyData)?>;
 const categoryColors = <?=json_encode($categoryColors)?>;
 const months = <?=json_encode($months)?>;
 
-// Configurar Chart.js para gráfico de linhas
 const ctx = document.getElementById('lineChart').getContext('2d');
 
 const datasets = Object.keys(monthlyData).map(category => ({
@@ -658,17 +649,21 @@ const lineChart = new Chart(ctx, {
       y: {
         beginAtZero: true,
         grid: {
-          color: '#f0f0f0'
+          color: 'rgba(128, 128, 128, 0.1)'
         },
         ticks: {
           callback: function(value) {
             return '€' + value;
-          }
+          },
+          color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
         }
       },
       x: {
         grid: {
           display: false
+        },
+        ticks: {
+          color: getComputedStyle(document.documentElement).getPropertyValue('--text-secondary')
         }
       }
     }
@@ -684,7 +679,6 @@ $cardData = array_map(function($c) {
 }, $cardSpending);
 ?>
 
-// Gráfico de Pizza - Distribuição por Cartão
 <?php if (!empty($cardSpending)): ?>
 const cardPieCtx = document.getElementById('cardPieChart').getContext('2d');
 
@@ -703,7 +697,7 @@ const cardPieData = {
       '#95a5a6'
     ],
     borderWidth: 2,
-    borderColor: '#fff'
+    borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary')
   }]
 };
 
@@ -720,7 +714,8 @@ const cardPieChart = new Chart(cardPieCtx, {
           padding: 15,
           font: {
             size: 12
-          }
+          },
+          color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
         }
       },
       tooltip: {
@@ -741,7 +736,6 @@ const cardPieChart = new Chart(cardPieCtx, {
 });
 <?php endif; ?>
 
-// Interatividade da legenda do gráfico de linhas
 document.querySelectorAll('.legend-item').forEach((item, index) => {
   item.addEventListener('click', function() {
     const meta = lineChart.getDatasetMeta(index);
@@ -751,7 +745,6 @@ document.querySelectorAll('.legend-item').forEach((item, index) => {
   });
 });
 
-// Animar barras de categoria
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(() => {
     document.querySelectorAll('.bar-fill').forEach(bar => {
