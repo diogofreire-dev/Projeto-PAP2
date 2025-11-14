@@ -270,6 +270,63 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
     [data-theme="dark"] .text-muted {
       color: var(--text-secondary) !important;
     }
+    
+    /* ===== CORREÇÕES TEMA ESCURO - FILTROS ===== */
+    
+    .form-select {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      transition: all 0.3s;
+    }
+    
+    .form-select:focus {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+    }
+    
+    /* Tema escuro - Selects */
+    [data-theme="dark"] .form-select {
+      background-color: #1a1d29;
+      color: #ecf0f1;
+      border-color: #34495e;
+      /* Seta do dropdown em branco */
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ecf0f1' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    }
+    
+    [data-theme="dark"] .form-select option {
+      background-color: #252936;
+      color: #ecf0f1;
+    }
+    
+    [data-theme="dark"] .form-select:focus {
+      background-color: #1a1d29;
+      color: #ecf0f1;
+      border-color: #2ecc71;
+      box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+    }
+    
+    /* Labels dos filtros */
+    [data-theme="dark"] .form-label {
+      color: #ecf0f1;
+    }
+    
+    [data-theme="dark"] .small.fw-semibold {
+      color: #ecf0f1;
+    }
+    
+    /* Card dos filtros */
+    [data-theme="dark"] .card .card-body {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    /* Garantir que os ícones também seguem a cor */
+    [data-theme="dark"] .form-label .bi {
+      color: #ecf0f1;
+    }
   </style>
 </head>
 <body>
