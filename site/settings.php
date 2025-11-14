@@ -154,7 +154,6 @@ $currentTheme = $settings['theme'] ?? 'light';
       display: none;
     }
     .theme-preview.active::after {
-      content: '✓';
       position: absolute;
       top: 50%;
       left: 50%;
