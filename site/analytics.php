@@ -540,7 +540,7 @@ $months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out',
                   default => '#95a5a6'
                 };
             ?>
-              <div class="card-usage-item mb-3" style="border-left: 4px solid <?=$medalColor?>;">
+              <div class="card-usage-item mb-3" <?=$medalColor?>;">
                 <div class="d-flex align-items-center gap-3">
                   <div class="flex-shrink-0 text-center" style="width: 40px;">
                     <div style="font-size: 24px; font-weight: 800; color: <?=$medalColor?>;">
