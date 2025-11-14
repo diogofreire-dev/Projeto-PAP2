@@ -75,18 +75,20 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
   <title>Gerir Cartões - FreeCard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <style>
+  <link rel="stylesheet" href="css/theme.css">
+<style>
     :root {
       --primary-green: #2ecc71;
       --dark-green: #27ae60;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8f9fa;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .navbar { 
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-      background: white;
+      background: var(--navbar-bg);
     }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -97,15 +99,27 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       background: var(--dark-green); 
       border-color: var(--dark-green); 
     }
+    .btn-outline-primary { 
+      color: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .btn-outline-primary:hover { 
+      background: var(--primary-green); 
+      border-color: var(--primary-green); 
+    }
+    .text-primary { color: var(--primary-green) !important; }
+    
     .card {
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
       transition: all 0.3s;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 30px var(--shadow);
     }
     .card-visual {
       border-radius: 12px;
@@ -144,10 +158,10 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       position: relative;
     }
     .summary-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
     }
     .stat-item {
       text-align: center;
@@ -157,15 +171,42 @@ $activeCards = count(array_filter($cards, fn($c) => $c['active']));
       font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
-      color: #2c3e50;
+      color: var(--text-primary);
     }
     .stat-item p {
       font-size: 13px;
       margin: 0;
-      color: #7f8c8d;
+      color: var(--text-secondary);
     }
     .stat-item:not(:last-child) {
-      border-right: 1px solid #e9ecef;
+      border-right: 1px solid var(--border-color);
+    }
+    
+    /* Tema escuro */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    [data-theme="dark"] .border {
+      border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .bg-light {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .badge {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary) !important;
+    }
+    [data-theme="dark"] .badge.bg-success {
+      background: #27ae60 !important;
+      color: white !important;
+    }
+    [data-theme="dark"] .badge.bg-secondary {
+      background: #7f8c8d !important;
+      color: white !important;
+    }
+    [data-theme="dark"] .progress {
+      background: var(--bg-hover);
     }
   </style>
 </head>

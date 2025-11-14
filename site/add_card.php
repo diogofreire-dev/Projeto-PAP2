@@ -82,18 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Adicionar Cartão - Freecard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <style>
+  <link rel="stylesheet" href="css/theme.css">
+<style>
     :root {
       --primary-green: #2ecc71;
       --dark-green: #27ae60;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8f9fa;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .navbar { 
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-      background: white;
+      background: var(--navbar-bg);
     }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -117,7 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .card {
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .card-header {
       background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
@@ -126,18 +130,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .form-label {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--text-primary);
       margin-bottom: 8px;
     }
     .form-control, .form-select {
-      border: 2px solid #e9ecef;
+      border: 2px solid var(--border-color);
       border-radius: 10px;
       padding: 12px 16px;
       transition: all 0.3s;
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     .form-control:focus, .form-select:focus {
       border-color: var(--primary-green);
       box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     .card-preview {
       border-radius: 16px;
@@ -163,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .progress-custom {
       height: 8px;
       border-radius: 10px;
-      background: #e9ecef;
+      background: var(--bg-hover);
     }
     .progress-bar-custom {
       background: var(--primary-green);
@@ -194,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       display: none;
     }
     .color-option input[type="radio"]:checked + .color-display {
-      border-color: #2c3e50;
+      border-color: var(--primary-green);
       box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
     }
     .color-display {
@@ -213,6 +221,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       font-size: 24px;
       font-weight: bold;
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    /* Tema escuro - ajustes específicos */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    [data-theme="dark"] .form-control::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -251,8 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10">
       <div class="mb-4">
-        <a href="dashboard.php" class="text-decoration-none text-muted">
-          <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+        <a href="cards.php" class="text-decoration-none text-muted">
+          <i class="bi bi-arrow-left"></i> Voltar aos Cartões
         </a>
       </div>
 

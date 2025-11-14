@@ -149,18 +149,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="css/theme.css">
-  <style>
+<style>
     :root {
       --primary-green: #2ecc71;
       --dark-green: #27ae60;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8f9fa;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .navbar { 
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-      background: white;
+      background: var(--navbar-bg);
     }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -176,7 +177,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .card {
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .card-header {
       background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
@@ -185,36 +188,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     .form-label {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--text-primary);
       margin-bottom: 8px;
     }
     .form-control, .form-select {
-      border: 2px solid #e9ecef;
+      border: 2px solid var(--border-color);
       border-radius: 10px;
       padding: 12px 16px;
       transition: all 0.3s;
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     .form-control:focus, .form-select:focus {
       border-color: var(--primary-green);
       box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     .amount-input {
       font-size: 32px;
       font-weight: 700;
       text-align: center;
-      border: 3px solid #e9ecef;
+      border: 3px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-primary);
     }
     .amount-input:focus {
       border-color: var(--primary-green);
     }
     .category-option {
-      border: 2px solid #e9ecef;
+      border: 2px solid var(--border-color);
       border-radius: 12px;
       padding: 16px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
-      background: white;
+      background: var(--bg-secondary);
     }
     .category-option:hover {
       border-color: var(--primary-green);
@@ -235,10 +244,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       margin-bottom: 8px;
     }
     .info-box {
-      background: #f8f9fa;
+      background: var(--bg-primary);
       border-left: 4px solid #3498db;
       padding: 16px;
       border-radius: 8px;
+    }
+    
+    /* Tema escuro */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    [data-theme="dark"] .form-control::placeholder,
+    [data-theme="dark"] .amount-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+    [data-theme="dark"] .bg-light {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .badge {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary) !important;
     }
   </style>
 </head>

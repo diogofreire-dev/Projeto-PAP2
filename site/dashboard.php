@@ -144,21 +144,28 @@ $categoryColors = [
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="css/theme.css">
-  <style>
+<style>
     :root {
       --primary-green: #2ecc71;
       --dark-green: #27ae60;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .card { 
       transition: transform 0.2s; 
       border: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 10px var(--shadow);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .card:hover { transform: translateY(-5px); }
-    .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .navbar { 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+      background: var(--navbar-bg);
+    }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
       background: var(--primary-green); 
@@ -180,10 +187,10 @@ $categoryColors = [
     
     /* Resumo rápido */
     .summary-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
     }
     .summary-stat {
       margin-bottom: 20px;
@@ -196,7 +203,7 @@ $categoryColors = [
     }
     .summary-stat-label {
       font-size: 13px;
-      color: #7f8c8d;
+      color: var(--text-secondary);
       margin: 0;
     }
     
@@ -209,9 +216,10 @@ $categoryColors = [
       justify-content: space-between;
       margin-bottom: 8px;
       font-size: 14px;
+      color: var(--text-primary);
     }
     .category-bar-wrapper {
-      background: #f0f0f0;
+      background: var(--bg-hover);
       border-radius: 10px;
       height: 32px;
       overflow: hidden;
@@ -233,12 +241,13 @@ $categoryColors = [
     
     /* Stats cards mini */
     .stat-mini-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
       height: 100%;
       transition: transform 0.2s;
+      color: var(--text-primary);
     }
     .stat-mini-card:hover {
       transform: translateY(-5px);
@@ -255,7 +264,7 @@ $categoryColors = [
     }
     .stat-mini-card .stat-label {
       font-size: 13px;
-      color: #7f8c8d;
+      color: var(--text-secondary);
       margin-bottom: 8px;
     }
     .stat-mini-card .stat-value {
@@ -263,10 +272,11 @@ $categoryColors = [
       font-weight: 800;
       margin-bottom: 4px;
       line-height: 1;
+      color: var(--text-primary);
     }
     .stat-mini-card .stat-description {
       font-size: 14px;
-      color: #7f8c8d;
+      color: var(--text-secondary);
       margin: 0;
     }
     
@@ -286,6 +296,22 @@ $categoryColors = [
     .tendency-down {
       background: #efe;
       color: #0a0;
+    }
+    
+    /* Tema escuro - ajustes */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    [data-theme="dark"] .border {
+      border-color: var(--border-color) !important;
+    }
+    [data-theme="dark"] .bg-light {
+      background: var(--bg-hover) !important;
+      color: var(--text-primary);
+    }
+    [data-theme="dark"] .table-light {
+      background: var(--bg-hover);
+      color: var(--text-primary);
     }
   </style>
 </head>

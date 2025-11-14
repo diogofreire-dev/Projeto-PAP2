@@ -1,0 +1,111 @@
+/* Adicionar ao <style> de cada página ou criar site/css/global-theme.css */
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.card {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+.navbar {
+  background: var(--navbar-bg) !important;
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .nav-link {
+  color: var(--text-primary);
+}
+
+.form-control, .form-select {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.form-control:focus, .form-select:focus {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.form-label {
+  color: var(--text-primary);
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* Cards especiais */
+.summary-card,
+.filter-card,
+.stat-mini-card {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px var(--shadow);
+}
+
+/* Elementos específicos do tema escuro */
+[data-theme="dark"] .table {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .transaction-item,
+[data-theme="dark"] .feature-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .category-badge {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .day-separator {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .category-bar-wrapper,
+[data-theme="dark"] .progress-custom {
+  background: var(--bg-hover);
+}
+
+[data-theme="dark"] .stat-item h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .transaction-item:hover {
+  background: var(--bg-hover);
+}
+
+[data-theme="dark"] .setting-item {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .setting-item:hover {
+  background: var(--bg-hover);
+}
+
+/* Inputs em tema escuro */
+[data-theme="dark"] .form-control::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+[data-theme="dark"] .input-group-text {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .alert {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}

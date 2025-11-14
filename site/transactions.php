@@ -121,18 +121,19 @@ foreach ($transactions as $t) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   <link rel="stylesheet" href="css/theme.css">
-  <style>
+<style>
     :root {
       --primary-green: #2ecc71;
       --dark-green: #27ae60;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f8f9fa;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
     }
     .navbar { 
       box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
-      background: white;
+      background: var(--navbar-bg);
     }
     .navbar-brand img { height: 35px; margin-right: 8px; }
     .btn-primary { 
@@ -146,24 +147,27 @@ foreach ($transactions as $t) {
     .card {
       border: none;
       border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
     .filter-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 10px var(--shadow);
     }
     .transaction-item {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
-      border: 1px solid #f0f0f0;
+      border: 1px solid var(--border-color);
       transition: all 0.2s;
     }
     .transaction-item:hover {
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 15px var(--shadow);
+      background: var(--bg-hover);
     }
     .transaction-icon {
       width: 48px;
@@ -184,24 +188,24 @@ foreach ($transactions as $t) {
     }
     .day-separator {
       font-weight: 700;
-      color: #2c3e50;
+      color: var(--text-primary);
       margin: 24px 0 16px;
       padding-bottom: 8px;
-      border-bottom: 2px solid #e9ecef;
+      border-bottom: 2px solid var(--border-color);
     }
     .category-badge {
-      background: #f0f0f0;
-      color: #2c3e50;
+      background: var(--bg-hover);
+      color: var(--text-primary);
       padding: 6px 12px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
     }
     .summary-card {
-      background: white;
+      background: var(--bg-secondary);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 20px var(--shadow);
     }
     .stat-item {
       text-align: center;
@@ -211,19 +215,30 @@ foreach ($transactions as $t) {
       font-size: 28px;
       font-weight: 800;
       margin-bottom: 4px;
-      color: #2c3e50;
+      color: var(--text-primary);
     }
     .stat-item p {
       font-size: 13px;
       margin: 0;
-      color: #7f8c8d;
+      color: var(--text-secondary);
     }
     .stat-item:not(:last-child) {
-      border-right: 1px solid #e9ecef;
+      border-right: 1px solid var(--border-color);
     }
     .btn-delete {
       padding: 6px 12px;
       font-size: 14px;
+    }
+    
+    /* Tema escuro */
+    [data-theme="dark"] .text-muted {
+      color: var(--text-secondary) !important;
+    }
+    [data-theme="dark"] .form-control,
+    [data-theme="dark"] .form-select {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
     }
   </style>
 </head>
