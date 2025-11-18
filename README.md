@@ -102,7 +102,7 @@ FreeCard/
 ## Capturas de Ecrã
 
 ### Homepage
-![Homepage](imgs/home.png)
+![Homepage](imgs/homepage.png)
 
 ### Dashboard
 ![Dashboard](imgs/dashboard.png)
@@ -112,6 +112,9 @@ FreeCard/
 
 ### Transações
 ![Cartões](imgs/transactions.png)
+
+### Análise
+![Cartões](imgs/analytics.png)
 
 ## Base de Dados
 
