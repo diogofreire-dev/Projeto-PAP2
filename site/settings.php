@@ -253,7 +253,7 @@ $currentTheme = $settings['theme'] ?? 'light';
           <div class="setting-item">
             <div class="d-flex justify-content-between align-items-center">
               <div>
-                <h5 class="mb-1"><i class="bi bi-bell"></i> Notificações</h5>
+                <h5 class="mb-1"><i class="bi bi-bell"></i> Notificações (em desenvolvimento)</h5>
                 <p class="text-muted small mb-0">Recebe alertas quando te aproximas dos limites dos cartões</p>
               </div>
               <div class="form-check form-switch">

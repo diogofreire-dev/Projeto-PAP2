@@ -219,25 +219,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .category-option {
       border: 2px solid var(--border-color);
       border-radius: 12px;
-      padding: 16px;
+      padding: 20px;
       text-align: center;
       cursor: pointer;
       transition: all 0.3s;
       background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1; /* Força o elemento a ser quadrado */
+      min-height: 0; /* Remove altura mínima */
     }
+
     .category-option:hover {
       border-color: var(--primary-green);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
     }
+
     .category-option input[type="radio"] {
       display: none;
     }
+
     .category-option input[type="radio"]:checked + .category-content {
       color: var(--primary-green);
     }
+
+    .category-option input[type="radio"]:checked ~ .category-option,
     .category-option.selected {
       border-color: var(--primary-green);
       background: rgba(46, 204, 113, 0.05);
+    }
+
+    .category-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      gap: 8px;
+    }
+
+    .category-icon {
+      font-size: 32px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-content small {
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.2;
+      display: block;
+    }
+
+    /* Grid das categorias */
+    .row.g-2 {
+      --bs-gutter-x: 0.5rem;
+      --bs-gutter-y: 0.5rem;
+    }
+
+    /* Garantir que todos têm o mesmo tamanho */
+    .col-6.col-md-3 {
+      display: flex;
+    }
+
+    .category-option {
+      width: 100%;
+    }
+
+    /* Ajuste específico para tema escuro */
+    [data-theme="dark"] .category-option {
+      border-color: var(--border-color);
+      background: var(--bg-secondary);
+    }
+
+    [data-theme="dark"] .category-option:hover {
+      border-color: var(--primary-green);
+      background: var(--bg-hover);
     }
     .category-icon {
       font-size: 32px;
